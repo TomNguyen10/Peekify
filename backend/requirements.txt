@@ -1,0 +1,7 @@
+fastapi                 # FastAPI framework
+uvicorn                 # ASGI server for FastAPI
+sqlalchemy              # SQL toolkit and ORM for PostgreSQL
+asyncpg                 # Asynchronous PostgreSQL driver
+pymongo                 # MongoDB driver
+boto3                   # AWS SDK for Python (S3 operations)
+python-dotenv           # Python dotenv for managing environment variables
