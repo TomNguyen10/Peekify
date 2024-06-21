@@ -6,3 +6,4 @@ pymongo                 # MongoDB driver
 boto3                   # AWS SDK for Python (S3 operations)
 python-dotenv           # Python dotenv for managing environment variables
 uvicorn                 # ASGI server for FastAPI with standard features
+databases               # Async database support for Python
