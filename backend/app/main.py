@@ -1,7 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from data.database import Base, engine, SessionLocal
-from sqlalchemy.orm import Session
+from routers import spotify_tokens, user
+from data.postgresql import Base, engine, SessionLocal
+from utils.scheduler import scheduler
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,25 +23,20 @@ app.add_middleware(
 )
 
 
+app.include_router(user.router)
+app.include_router(spotify_tokens.router)
+
+
 @app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def read_root():
+    return {"Hello": "World"}
 
 
-@app.get("/hello/{name}")
-async def hello_name(name: str):
-    return {"message": f"Hello {name}"}
+@app.on_event("startup")
+async def startup():
+    scheduler.start()
 
 
-def get_db() -> Session:
-    """
-    Returns a database session.
-
-    Returns:
-        Session: The database session object.
-    """
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@app.on_event("shutdown")
+async def shutdown():
+    scheduler.shutdown()
