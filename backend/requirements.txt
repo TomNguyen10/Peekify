@@ -1,6 +1,7 @@
 fastapi                 # FastAPI framework
 uvicorn                 # ASGI server for FastAPI
 sqlalchemy              # SQL toolkit and ORM for PostgreSQL
+pymongo                 # MongoDB driver
 asyncpg                 # Asynchronous PostgreSQL driver
 pymongo                 # MongoDB driver
 boto3                   # AWS SDK for Python (S3 operations)
