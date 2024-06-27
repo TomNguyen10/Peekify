@@ -25,6 +25,7 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <h1>React App with TypeScript and FastAPI Backend</h1>
+      <h1>Hello, World</h1>
       {/* {error && <p>{error}</p>}
       {data && (
         <pre>
