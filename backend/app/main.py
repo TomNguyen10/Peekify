@@ -1,8 +1,10 @@
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
-import httpx
-import secrets
+from fastapi.responses import JSONResponse
+from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 import uvicorn
+import logging
+import requests
 
 app = FastAPI()
 
@@ -15,14 +17,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Spotify OAuth Config
-SPOTIFY_CLIENT_ID = "afbb70c2c3f1418ab00bdfc52ab754f7"
-SPOTIFY_CLIENT_SECRET = "82417ed738434bd19305fda377edd093"
-# Updated to match frontend port
-SPOTIFY_REDIRECT_URI = "http://localhost:5173/callback"
 
 # In-memory storage for simplicity
 sessions = {}
+
+logging.basicConfig(level=logging.DEBUG)
+
+tokens = {}
 
 
 @app.get("/login/spotify")
@@ -37,8 +38,16 @@ async def spotify_login():
 
 
 @app.get("/callback")
-async def spotify_callback(code: str, response: Response):
-    params = {
+async def spotify_callback(request: Request, code: str):
+    logging.debug(f"Received authorization code: {code}")
+
+    if code in tokens:
+        logging.error(f"Authorization code {code} has already been used.")
+        raise HTTPException(
+            status_code=400, detail="Authorization code already used.")
+
+    token_url = "https://accounts.spotify.com/api/token"
+    payload = {
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": SPOTIFY_REDIRECT_URI,
@@ -46,37 +55,61 @@ async def spotify_callback(code: str, response: Response):
         "client_secret": SPOTIFY_CLIENT_SECRET,
     }
 
-    async with httpx.AsyncClient() as client:
-        token_response = await client.post("https://accounts.spotify.com/api/token", data=params)
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
 
-    if token_response.status_code == 200:
-        token_data = token_response.json()
-        access_token = token_data["access_token"]
+    try:
+        response = requests.post(token_url, data=payload, headers=headers)
+        response_data = response.json()
 
-        async with httpx.AsyncClient() as client:
-            user_response = await client.get("https://api.spotify.com/v1/me", headers={
-                "Authorization": f"Bearer {access_token}"
-            })
+        logging.debug(f"Token request payload: {payload}")
+        logging.debug(f"Token request headers: {headers}")
+        logging.debug(f"Token response status code: {response.status_code}")
+        logging.debug(f"Token response data: {response_data}")
 
-        if user_response.status_code == 200:
-            user_info = user_response.json()
-            session_token = secrets.token_hex(16)
-            sessions[session_token] = user_info
+        if response.status_code != 200:
+            logging.error(f"Failed to get token: {
+                          response.status_code} - {response_data}")
+            raise HTTPException(
+                status_code=400, detail="Failed to obtain access token")
 
-            response.set_cookie(key="session_token",
-                                value=session_token, httponly=True)
-            return {"message": "Login successful", "user_info": user_info}
-        else:
-            print(f"Failed to fetch user info: {
-                  user_response.status_code} - {user_response.text}")
+        access_token = response_data.get("access_token")
+        refresh_token = response_data.get("refresh_token")
 
-    else:
-        print(f"Failed to get token: {
-              token_response.status_code} - {token_response.text}")
-        print("Token request params:", params)
+        # Store the tokens
+        tokens[code] = {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+        }
 
-    raise HTTPException(status_code=token_response.status_code,
-                        detail="Failed to authenticate with Spotify")
+        logging.debug(f"Access token obtained: {access_token}")
+
+        # Fetch user information
+        user_info_url = "https://api.spotify.com/v1/me"
+        user_info_headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+
+        user_info_response = requests.get(
+            user_info_url, headers=user_info_headers)
+        user_info_data = user_info_response.json()
+
+        logging.debug(f"User info response status code: {
+                      user_info_response.status_code}")
+        logging.debug(f"User info response data: {user_info_data}")
+
+        if user_info_response.status_code != 200:
+            logging.error(f"Failed to get user info: {
+                          user_info_response.status_code} - {user_info_data}")
+            raise HTTPException(
+                status_code=400, detail="Failed to obtain user info")
+
+        return JSONResponse(content=user_info_data)
+
+    except Exception as e:
+        logging.error(f"Error during token exchange: {str(e)}")
+        raise HTTPException(status_code=400, detail="Token exchange failed")
 
 
 @app.get("/user")
