@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 import uvicorn
 import logging
@@ -25,16 +25,29 @@ logging.basicConfig(level=logging.DEBUG)
 
 tokens = {}
 
+SCOPE = "user-read-email user-read-private"
+
+# @app.get("/login/spotify")
+# async def spotify_login():
+#     authorization_url = (
+#         f"https://accounts.spotify.com/authorize?client_id={SPOTIFY_CLIENT_ID}"
+#         "&response_type=code"
+#         f"&redirect_uri={SPOTIFY_REDIRECT_URI}"
+#         "&scope=user-read-private%20user-read-email"
+#     )
+#     return {"redirect_url": authorization_url}
+
 
 @app.get("/login/spotify")
-async def spotify_login():
-    authorization_url = (
-        f"https://accounts.spotify.com/authorize?client_id={SPOTIFY_CLIENT_ID}"
-        "&response_type=code"
+def login_spotify():
+    auth_url = (
+        f"https://accounts.spotify.com/authorize"
+        f"?response_type=code"
+        f"&client_id={SPOTIFY_CLIENT_ID}"
         f"&redirect_uri={SPOTIFY_REDIRECT_URI}"
-        "&scope=user-read-private%20user-read-email"
+        f"&scope={SCOPE}"
     )
-    return {"redirect_url": authorization_url}
+    return RedirectResponse(auth_url)
 
 
 @app.get("/callback")

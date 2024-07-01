@@ -16,7 +16,6 @@ const App: React.FC = () => {
         try {
           console.log("Authorization code found:", code);
 
-          // Remove the code from the URL before making the request to prevent multiple requests
           queryParams.delete("code");
           window.history.replaceState(
             {},
@@ -30,6 +29,9 @@ const App: React.FC = () => {
           console.log("User info response:", response.data);
           setUserInfo(response.data);
           setIsLoggedIn(true);
+
+          // Redirect to the main page after login
+          window.history.replaceState({}, document.title, "/");
         } catch (error: any) {
           console.error(
             "Failed to login:",
@@ -43,14 +45,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleLogin = () => {
-    const clientId = "afbb70c2c3f1418ab00bdfc52ab754f7";
-    const redirectUri = "http://localhost:5173/callback";
-    const scope = "user-read-email user-read-private";
-    const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${clientId}&scope=${encodeURIComponent(
-      scope
-    )}&redirect_uri=${encodeURIComponent(redirectUri)}`;
-
-    window.location.href = authUrl;
+    window.location.href = `${API_BASE_URL}/login/spotify`;
   };
 
   return (
@@ -58,7 +53,6 @@ const App: React.FC = () => {
       {isLoggedIn ? (
         <div>
           <h1>Welcome, {userInfo.display_name}</h1>
-          {/* Display other user info as needed */}
         </div>
       ) : (
         <div>
