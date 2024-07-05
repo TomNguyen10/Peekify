@@ -1,6 +1,14 @@
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, HTTPException, Request, Response, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
+from sqlalchemy.orm import Session
+from models.user import User
+from models.spotify_tokens import SpotifyToken
+from schemas.user import UserCreate
+from schemas.spotify_tokens import SpotifyTokenCreate
+from utils.user import get_user_by_spotify_id, create_user, create_or_update_spotify_token
+from data.postgresql import get_db
+from datetime import datetime, timedelta
 import logging
 import requests
 
@@ -25,7 +33,7 @@ def login_spotify():
 
 
 @router.get("/callback")
-async def spotify_callback(request: Request, code: str):
+async def spotify_callback(request: Request, code: str, db: Session = Depends(get_db)):
     logging.debug(f"Received authorization code: {code}")
 
     if code in tokens:
@@ -63,7 +71,7 @@ async def spotify_callback(request: Request, code: str):
 
         access_token = response_data.get("access_token")
         refresh_token = response_data.get("refresh_token")
-
+        expires_in = response_data.get("expires_in")
         tokens[code] = {
             "access_token": access_token,
             "refresh_token": refresh_token,
@@ -89,7 +97,31 @@ async def spotify_callback(request: Request, code: str):
                           user_info_response.status_code} - {user_info_data}")
             raise HTTPException(
                 status_code=400, detail="Failed to obtain user info")
-
+        spotify_user_id = user_info_data.get('id')
+        user = get_user_by_spotify_id(db, spotify_user_id)
+        if not user:
+            # Create new user if not exists
+            user_create = UserCreate(
+                spotify_user_id=spotify_user_id,
+                username=user_info_data.get('display_name'),
+                email=user_info_data.get('email'),
+                country=user_info_data.get('country'),
+                images=str(user_info_data.get('images')),
+                profile_url=user_info_data.get(
+                    'external_urls', {}).get('spotify')
+            )
+            user = create_user(db, user_create)
+            logging.info(f"Created new user with ID: {user.user_id}")
+        token_create = SpotifyTokenCreate(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type=response_data.get('token_type'),
+            expires_at=datetime.utcnow() + timedelta(seconds=expires_in),
+            scope=response_data.get('scope')
+        )
+        create_or_update_spotify_token(db, user.user_id, token_create)
+        logging.info(
+            f"Created/Updated Spotify token for user ID: {user.user_id}")
         return JSONResponse(content=user_info_data)
 
     except Exception as e:

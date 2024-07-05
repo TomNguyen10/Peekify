@@ -1,14 +1,14 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 
 class SpotifyTokenBase(BaseModel):
-    user_id: int
     access_token: str
     refresh_token: str
     token_type: str
     expires_at: datetime
-    scope: str
+    scope: Optional[str] = None
 
 
 class SpotifyTokenCreate(SpotifyTokenBase):
@@ -17,8 +17,7 @@ class SpotifyTokenCreate(SpotifyTokenBase):
 
 class SpotifyToken(SpotifyTokenBase):
     token_id: int
-    created_at: datetime
-    updated_at: datetime
+    user_id: int
 
     class Config:
         from_attributes = True

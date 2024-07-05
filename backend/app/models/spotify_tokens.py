@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 from data.postgresql import Base
-from datetime import datetime
 
 
 class SpotifyToken(Base):
@@ -11,8 +11,6 @@ class SpotifyToken(Base):
     access_token = Column(String, nullable=False)
     refresh_token = Column(String, nullable=False)
     token_type = Column(String)
-    expires_at = Column(DateTime)
+    expires_at = Column(DateTime, nullable=False)
     scope = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow,
-                        onupdate=datetime.utcnow)
+    user = relationship("User", back_populates="spotify_token")

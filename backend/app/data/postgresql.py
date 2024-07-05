@@ -1,15 +1,17 @@
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import POSTGRESQL_SOURCE
 
 engine = create_engine(POSTGRESQL_SOURCE)
 
-metadata = MetaData()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def create_tables():
+    Base.metadata.create_all(bind=engine)
 
 
 def get_db():
