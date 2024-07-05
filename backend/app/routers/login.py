@@ -2,11 +2,10 @@ from fastapi import APIRouter, HTTPException, Request, Response, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
 from sqlalchemy.orm import Session
-from models.user import User
-from models.spotify_tokens import SpotifyToken
 from schemas.user import UserCreate
 from schemas.spotify_tokens import SpotifyTokenCreate
-from utils.user import get_user_by_spotify_id, create_user, create_or_update_spotify_token
+from utils.user import get_user_by_spotify_id, create_user
+from utils.spotify_tokens import create_or_update_spotify_token
 from data.postgresql import get_db
 from datetime import datetime, timedelta
 import logging
@@ -116,7 +115,7 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             access_token=access_token,
             refresh_token=refresh_token,
             token_type=response_data.get('token_type'),
-            expires_at=datetime.utcnow() + timedelta(seconds=expires_in),
+            expires_at=datetime.now() + timedelta(seconds=expires_in),
             scope=response_data.get('scope')
         )
         create_or_update_spotify_token(db, user.user_id, token_create)
