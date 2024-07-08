@@ -38,6 +38,6 @@ def setup_scheduler():
 
     # Token refresh job (runs at 11:30 PM, 5:30 AM, 11:30 AM, 5:30 PM EST)
     scheduler.add_job(refresh_all_tokens, CronTrigger(
-        hour="23,5,11,17", minute="30", timezone=est))
+        hour="2,5,8,11,14,17,20,23", minute="30", timezone=est))
 
     return scheduler
