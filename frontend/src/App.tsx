@@ -1,37 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:8000";
 
 const App: React.FC = () => {
-  // const [data, setData] = useState<any>(null);
-  // const [error, setError] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState<any>(null);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const checkForAuthorizationCode = async () => {
+      const queryParams = new URLSearchParams(window.location.search);
+      const code = queryParams.get("code");
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch("http://127.0.0.1:8000");
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  //     const jsonData = await response.json();
-  //     setData(jsonData);
-  //   } catch (error) {
-  //     setError("Error fetching data. See console for details.");
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
+      if (code) {
+        try {
+          console.log("Authorization code found:", code);
+
+          queryParams.delete("code");
+          window.history.replaceState(
+            {},
+            document.title,
+            `${window.location.pathname}`
+          );
+
+          const response = await axios.get(
+            `${API_BASE_URL}/callback?code=${code}`
+          );
+          console.log("User info response:", response.data);
+          setUserInfo(response.data);
+          setIsLoggedIn(true);
+
+          // Redirect to the main page after login
+          window.history.replaceState({}, document.title, "/");
+        } catch (error: any) {
+          console.error(
+            "Failed to login:",
+            error.response ? error.response.data : error.message
+          );
+        }
+      }
+    };
+
+    checkForAuthorizationCode();
+  }, []);
+
+  const handleLogin = () => {
+    window.location.href = `${API_BASE_URL}/login/spotify`;
+  };
 
   return (
-    <div className="App">
-      <h1>React App with TypeScript and FastAPI Backend</h1>
-      <h1>Hello, World</h1>
-      {/* {error && <p>{error}</p>}
-      {data && (
-        <pre>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )} */}
+    <div>
+      {isLoggedIn ? (
+        <div>
+          <h1>Welcome, {userInfo.display_name}</h1>
+        </div>
+      ) : (
+        <div>
+          <h1>Please log in</h1>
+          <button onClick={handleLogin}>Log in with Spotify</button>
+        </div>
+      )}
     </div>
   );
 };
