@@ -8,3 +8,11 @@ boto3                   # AWS SDK for Python (S3 operations)
 python-dotenv           # Python dotenv for managing environment variables
 uvicorn                 # ASGI server for FastAPI with standard features
 databases               # Async database support for Python
+config                  # Configuration management for Python
+datetime                # Date and time utilities for Python
+logging                 # Logging utilities for Python
+requests                # HTTP requests for Python
+pydantic                # Data validation and settings management using Python type annotations
+typing                  # Type hints for Python
+apscheduler             # Advanced Python Scheduler
+pytz                    # Timezone definitions for Python
