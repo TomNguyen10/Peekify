@@ -1,16 +1,23 @@
-A web application generate your weekly Spotify Wrapped
+# A web application generate your weekly Spotify Wrapped
 
-Under Deverlopment
+_Under Deverlopment_
 
-#Running Frontend
+## Running Frontend
+
+```
 npm run dev
+```
 
-#Running server side
+# Running server side
 
-1. cd backend/app
-2. npm install requirements.txt
-3. run command: uvicorn main:app --reload
+```
+cd backend/app
 
-#Note
+pip install requirements.txt
+
+uvicorn main:app --reload
+```
+
+# Note
 
 - Always make sure the .env file is created and is included in .gitignore
