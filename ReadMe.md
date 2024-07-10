@@ -5,6 +5,18 @@ _Under Deverlopment_
 ## Running Frontend
 
 ```
+cd frontend
+```
+
+### Setting up the environment
+
+```
+npm install
+```
+
+### Run the application
+
+```
 npm run dev
 ```
 
@@ -12,9 +24,17 @@ npm run dev
 
 ```
 cd backend/app
+```
 
+### Install the requirements
+
+```
 pip install requirements.txt
+```
 
+### Run
+
+```
 uvicorn main:app --reload
 ```
 
