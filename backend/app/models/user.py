@@ -15,5 +15,8 @@ class User(Base):
     images = Column(String)
     profile_url = Column(String)
     created_at = Column(DateTime, default=datetime.now())
+
     spotify_token = relationship(
         "SpotifyToken", back_populates="user", uselist=False)
+    listening_activities = relationship(
+        "UserListeningActivity", back_populates="user")
