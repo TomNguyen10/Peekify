@@ -3,7 +3,7 @@ from typing import List
 
 
 class TrackBase(BaseModel):
-    spotify_track_id: str
+    id: str
     name: str
     href: str
     duration_ms: int
@@ -18,8 +18,5 @@ class TrackCreate(TrackBase):
 
 
 class Track(TrackBase):
-    track_id: int
-    album_spotify_id: str
-
     class Config:
         from_attributes = True

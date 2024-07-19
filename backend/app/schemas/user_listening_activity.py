@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 
 class UserListeningActivityBase(BaseModel):
@@ -7,14 +8,16 @@ class UserListeningActivityBase(BaseModel):
 
 
 class UserListeningActivityCreate(UserListeningActivityBase):
-    pass
+    spotify_user_id: str
+    spotify_track_id: str
+    spotify_album_id: str
 
 
 class UserListeningActivity(UserListeningActivityBase):
-    activity_id: int
-    user_spotify_id: str
-    track_spotify_id: str
-    album_spotify_id: str
+    id: int
+    spotify_user_id: str
+    spotify_track_id: str
+    spotify_album_id: str
 
     class Config:
         from_attributes = True

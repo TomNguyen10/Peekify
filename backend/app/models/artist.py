@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.dialects.postgresql import ARRAY
 from data.postgresql import Base
 
@@ -6,8 +6,7 @@ from data.postgresql import Base
 class Artist(Base):
     __tablename__ = "artists"
 
-    artist_id = Column(Integer, primary_key=True, index=True)
-    spotify_artist_id = Column(String, unique=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     name = Column(String)
     href = Column(String)
     followers = Column(Integer)

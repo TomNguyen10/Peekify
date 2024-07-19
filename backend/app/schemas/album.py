@@ -3,7 +3,7 @@ from typing import List
 
 
 class AlbumBase(BaseModel):
-    spotify_album_id: str
+    id: str
     name: str
     href: str
     release_date: str
@@ -13,7 +13,7 @@ class AlbumBase(BaseModel):
     label: str
     popularity: int
     uri: str
-    images: List[str]
+    images: str
     artist_spotify_ids: List[str]
 
 
@@ -22,7 +22,5 @@ class AlbumCreate(AlbumBase):
 
 
 class Album(AlbumBase):
-    album_id: int
-
     class Config:
         from_attributes = True

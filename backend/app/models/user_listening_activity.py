@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, String, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from data.postgresql import Base
 
@@ -6,10 +6,10 @@ from data.postgresql import Base
 class UserListeningActivity(Base):
     __tablename__ = "user_listening_activities"
 
-    activity_id = Column(Integer, primary_key=True, index=True)
-    spotify_user_id = Column(String, ForeignKey("users.spotify_user_id"))
-    spotify_track_id = Column(String, ForeignKey("tracks.spotify_track_id"))
-    spotify_album_id = Column(String, ForeignKey("albums.spotify_album_id"))
+    id = Column(Integer, primary_key=True, index=True)
+    spotify_user_id = Column(String, ForeignKey("users.id"))
+    spotify_track_id = Column(String, ForeignKey("tracks.id"))
+    spotify_album_id = Column(String, ForeignKey("albums.id"))
     activity_listened_at = Column(DateTime)
 
     user = relationship("User", back_populates="listening_activities")

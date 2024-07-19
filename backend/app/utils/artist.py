@@ -5,35 +5,47 @@ import requests
 from config import SPOTIFY_API_BASE_URL
 
 
-def get_or_create_artist(db: Session, artist_spotify_id: str, access_token: str) -> Artist:
-    artist = db.query(Artist).filter(
-        Artist.artist_spotify_id == artist_spotify_id).first()
-    if not artist:
-        artist_data = fetch_artist_from_spotify(
-            artist_spotify_id, access_token)
-        artist = Artist(**ArtistCreate(**artist_data).model_dump())
-        db.add(artist)
-        db.flush()
-    return artist
+def get_artist_by_spotify_id(db: Session, spotify_artist_id: str) -> Artist:
+    # Changed to 'id'
+    return db.query(Artist).filter(Artist.id == spotify_artist_id).first()
 
 
-def fetch_artist_from_spotify(artist_spotify_id: str, access_token: str) -> dict:
+def create_or_update_artist(db: Session, spotify_artist_id: str, artist: ArtistCreate) -> Artist:
+    db_artist = get_artist_by_spotify_id(db, spotify_artist_id)
+    if db_artist:
+        for key, value in artist.dict().items():
+            if key != 'id':
+                setattr(db_artist, key, value)
+    else:
+        db_artist = Artist(
+            id=spotify_artist_id,
+            **{key: value for key, value in artist.dict().items() if key != 'id'}
+        )
+        db.add(db_artist)
+    db.commit()
+    db.refresh(db_artist)
+    return db_artist
+
+
+def fetch_artist_from_spotify(artist_spotify_id: str, access_token: str) -> ArtistCreate:
     headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(
         f"{SPOTIFY_API_BASE_URL}/artists/{artist_spotify_id}", headers=headers)
 
     if response.status_code == 200:
-        artist_data = response.json()
-        return {
-            "artist_spotify_id": artist_data["id"],
-            "artist_name": artist_data["name"],
-            "artist_href": artist_data["href"],
-            "artist_followers": artist_data["followers"]["total"],
-            "artist_genres": artist_data["genres"],
-            "artist_popularity": artist_data["popularity"],
-            "artist_uri": artist_data["uri"],
-            "artist_images": [image["url"] for image in artist_data["images"]]
-        }
+        new_artist = response.json()
+        updated_artist = ArtistCreate(
+            id=new_artist["id"],
+            name=new_artist["name"],
+            href=new_artist["href"],
+            followers=new_artist["followers"]["total"],
+            genres=new_artist["genres"],
+            popularity=new_artist["popularity"],
+            uri=new_artist["uri"],
+            images=str(new_artist.get('images')),
+        )
     else:
         raise Exception(f"Failed to fetch artist from Spotify: {
                         response.status_code}")
+
+    return updated_artist

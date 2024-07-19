@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from data.postgresql import Base
 from datetime import datetime
@@ -7,8 +7,7 @@ from datetime import datetime
 class User(Base):
     __tablename__ = "users"
 
-    user_id = Column(Integer, primary_key=True, index=True)
-    spotify_user_id = Column(String, unique=True, index=True, nullable=False)
+    id = Column(String, primary_key=True, index=True)
     username = Column(String, index=True)
     email = Column(String, unique=True, index=True)
     country = Column(String)

@@ -3,14 +3,14 @@ from typing import List
 
 
 class ArtistBase(BaseModel):
-    spotify_artist_id: str
+    id: str
     name: str
     href: str
     followers: int
     genres: List[str]
     popularity: int
     uri: str
-    images: List[str]
+    images: str
 
 
 class ArtistCreate(ArtistBase):
@@ -18,7 +18,5 @@ class ArtistCreate(ArtistBase):
 
 
 class Artist(ArtistBase):
-    artist_id: int
-
     class Config:
         from_attributes = True

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, String, Integer
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 from data.postgresql import Base
@@ -7,8 +7,7 @@ from data.postgresql import Base
 class Album(Base):
     __tablename__ = "albums"
 
-    album_id = Column(Integer, primary_key=True, index=True)
-    spotify_album_id = Column(String, unique=True, index=True)
+    id = Column(String, primary_key=True, index=True)
     name = Column(String)
     href = Column(String)
     release_date = Column(String)
@@ -20,7 +19,6 @@ class Album(Base):
     uri = Column(String)
     images = Column(String)
     artist_spotify_ids = Column(ARRAY(String))
-    tracks = relationship(
-        "Track", back_populates="album")
+    tracks = relationship("Track", back_populates="album")
     listening_activities = relationship(
         "UserListeningActivity", back_populates="album")

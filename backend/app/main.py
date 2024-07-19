@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from data.postgresql import create_tables
 from routers import login
-from utils.cron_jobs import setup_scheduler
+from utils.cron_jobs import setup_scheduler, test_fetch_and_store_for_all_users
 import logging
 
 # Configure logging
@@ -22,6 +22,7 @@ async def startup_event():
     logger.info("Tables created successfully (if they didn't exist).")
     scheduler.start()
     logger.info("Scheduler started.")
+    test_fetch_and_store_for_all_users()
 
 
 @app.on_event("shutdown")
