@@ -12,7 +12,6 @@ class Track(Base):
     href = Column(String)
     duration_ms = Column(Integer)
     popularity = Column(Integer)
-    genres = Column(ARRAY(String))
     uri = Column(String)
     album_spotify_id = Column(String, ForeignKey("albums.id"))
     artist_spotify_ids = Column(ARRAY(String))
