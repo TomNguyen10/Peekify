@@ -2,7 +2,6 @@ from sqlalchemy.orm import Session
 from models.album import Album
 from schemas.album import AlbumCreate
 import requests
-import json
 from config import SPOTIFY_API_BASE_URL
 
 

@@ -1,6 +1,5 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from sqlalchemy.orm import Session
 from data.postgresql import SessionLocal
 from models.user import User
 from utils.spotify_tokens import refresh_spotify_token, get_spotify_token
