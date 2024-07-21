@@ -55,8 +55,9 @@ const App: React.FC = () => {
           <h1>Welcome, {userInfo.display_name}</h1>
         </div>
       ) : (
-        <div>
-          <h1>Please log in</h1>
+        <div className="center-login">
+          <h2>Welcome to Peekify</h2>
+          <p className="subtitle">Your weekly Spotify Analysis</p>
           <button onClick={handleLogin}>Log in with Spotify</button>
         </div>
       )}

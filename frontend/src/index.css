@@ -25,6 +25,8 @@ a:hover {
 body {
   margin: 0;
   display: flex;
+  justify-content: center;
+  align-items: center;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
@@ -33,6 +35,13 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+h2 {
+  font-size: 2.8em;
+  margin: 0.5em 0;
+  color: #1db954;
+  /* text-shadow: 1px 1px 10px black; */
 }
 
 button {
@@ -47,11 +56,33 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #1db954;
 }
+
+button:active {
+  background-color: #1db954;
+  color: #1a1a1a;
+}
+
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  /* outline: 4px auto -webkit-focus-ring-color; */
+  background-color: #1db954;
+  color: #1a1a1a;
+}
+
+.center-login {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+.subtitle {
+  font-style: italic;
+  color: rgb(80, 135, 92);
 }
 
 @media (prefers-color-scheme: light) {
@@ -60,7 +91,7 @@ button:focus-visible {
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+    color: #1db954;
   }
   button {
     background-color: #f9f9f9;
