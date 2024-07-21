@@ -22,17 +22,27 @@ npm run dev
 
 # Running server side
 
-```
-cd backend/app
-```
-
 ### Install the requirements
+
+```
+cd backend
+```
 
 ```
 pip install requirements.txt
 ```
 
+if you have already install requirements before, run:
+
+```
+pip install -r requirements.txt
+```
+
 ### Run
+
+```
+cd app
+```
 
 ```
 uvicorn main:app --reload
