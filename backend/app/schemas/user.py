@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class UserBase(BaseModel):
-    spotify_user_id: str
+    id: str
     username: Optional[str] = None
     email: Optional[str] = None
     country: Optional[str] = None
@@ -17,7 +17,6 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    user_id: int
     created_at: datetime
 
     class Config:

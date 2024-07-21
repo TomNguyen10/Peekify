@@ -15,7 +15,7 @@ router = APIRouter()
 
 sessions = {}
 tokens = {}
-SCOPE = "user-read-email user-read-private"
+SCOPE = "user-read-email user-read-private user-read-recently-played"
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -101,7 +101,7 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
         if not user:
             # Create new user if not exists
             user_create = UserCreate(
-                spotify_user_id=spotify_user_id,
+                id=spotify_user_id,  # Update to "id"
                 username=user_info_data.get('display_name'),
                 email=user_info_data.get('email'),
                 country=user_info_data.get('country'),
@@ -110,7 +110,8 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
                     'external_urls', {}).get('spotify')
             )
             user = create_user(db, user_create)
-            logging.info(f"Created new user with ID: {user.user_id}")
+            logging.info(f"Created new user with ID: {
+                         user.id}")  # Update to "id"
         token_create = SpotifyTokenCreate(
             access_token=access_token,
             refresh_token=refresh_token,
@@ -118,9 +119,10 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             expires_at=datetime.now() + timedelta(seconds=expires_in),
             scope=response_data.get('scope')
         )
-        create_or_update_spotify_token(db, user.user_id, token_create)
+        create_or_update_spotify_token(
+            db, user.id, token_create)
         logging.info(
-            f"Created/Updated Spotify token for user ID: {user.user_id}")
+            f"Created/Updated Spotify token for user ID: {user.id}")
         return JSONResponse(content=user_info_data)
 
     except Exception as e:

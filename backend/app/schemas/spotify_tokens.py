@@ -16,8 +16,8 @@ class SpotifyTokenCreate(SpotifyTokenBase):
 
 
 class SpotifyToken(SpotifyTokenBase):
-    token_id: int
-    user_id: int
+    id: int
+    user_id: str
 
     class Config:
         from_attributes = True

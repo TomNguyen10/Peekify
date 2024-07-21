@@ -16,3 +16,5 @@ pydantic                # Data validation and settings management using Python t
 typing                  # Type hints for Python
 apscheduler             # Advanced Python Scheduler
 pytz                    # Timezone definitions for Python
+spotipy                 # Spotify API wrapper
+psychopg2               # PostgreSQL driver

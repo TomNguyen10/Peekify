@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+from models.user import User
 from models.spotify_tokens import SpotifyToken
+from schemas.user import UserCreate
 from schemas.spotify_tokens import SpotifyTokenCreate
 from datetime import datetime, timedelta
 import requests
@@ -10,31 +12,35 @@ import logging
 REFRESH_BUFFER = timedelta(minutes=30)
 
 
-def get_spotify_token(db: Session, user_id: int):
+def get_spotify_token(db: Session, user_id: int) -> SpotifyToken:
     return db.query(SpotifyToken).filter(SpotifyToken.user_id == user_id).first()
 
 
-def create_or_update_spotify_token(db: Session, user_id: int, token: SpotifyTokenCreate):
-    db_token = get_spotify_token(db, user_id)
+def create_or_update_spotify_token(db: Session, user_id: str, token: SpotifyTokenCreate):
+    db_token = db.query(SpotifyToken).filter(
+        SpotifyToken.user_id == user_id).first()
     if db_token:
-        for key, value in token.model_dump().items():
-            setattr(db_token, key, value)
+        db_token.access_token = token.access_token
+        db_token.refresh_token = token.refresh_token
+        db_token.token_type = token.token_type
+        db_token.expires_at = token.expires_at
+        db_token.scope = token.scope
     else:
-        db_token = SpotifyToken(**token.model_dump(), user_id=user_id)
+        db_token = SpotifyToken(user_id=user_id, **token.dict())
         db.add(db_token)
     db.commit()
     db.refresh(db_token)
     return db_token
 
 
-def refresh_spotify_token(db: Session, user_id: int):
+def refresh_spotify_token(db: Session, user_id: str):
     spotify_token = get_spotify_token(db, user_id)
     if not spotify_token:
         logging.warning(f"No token found for user {user_id}")
         return None
 
     # Check if the token will expire within the buffer time
-    if datetime.utcnow() + REFRESH_BUFFER < spotify_token.expires_at:
+    if datetime.now() + REFRESH_BUFFER < spotify_token.expires_at:
         logging.info(f"Token for user {
                      user_id} is still valid and not close to expiration")
         return spotify_token
@@ -64,7 +70,7 @@ def refresh_spotify_token(db: Session, user_id: int):
     token_update = SpotifyTokenCreate(
         access_token=new_token_info['access_token'],
         token_type=new_token_info['token_type'],
-        expires_at=datetime.utcnow() +
+        expires_at=datetime.now() +
         timedelta(seconds=new_token_info['expires_in']),
         refresh_token=new_token_info.get(
             'refresh_token', spotify_token.refresh_token),
