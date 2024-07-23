@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from data.postgresql import create_tables
-from routers import login
+from routers import login, logout
 from utils.cron_jobs import setup_scheduler, test_fetch_and_store_for_all_users
 import logging
 
@@ -41,6 +41,7 @@ app.add_middleware(
 )
 
 app.include_router(login.router, prefix="")
+app.include_router(logout.router, prefix="")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

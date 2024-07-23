@@ -138,8 +138,8 @@ async def get_user(request: Request):
     raise HTTPException(status_code=401, detail="Not authenticated")
 
 
-@router.post("/logout")
-async def logout(response: Response, request: Request):
+@router.post("/logout-session")
+async def logout_session(response: Response, request: Request):
     session_token = request.cookies.get("session_token")
     if session_token:
         sessions.pop(session_token, None)

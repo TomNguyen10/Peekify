@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import LogoutButton from "./LogoutButton";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8000";
@@ -53,6 +54,7 @@ const App: React.FC = () => {
       {isLoggedIn ? (
         <div>
           <h1>Welcome, {userInfo.display_name}</h1>
+          <LogoutButton />
         </div>
       ) : (
         <div className="center-login">
