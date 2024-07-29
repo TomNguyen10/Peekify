@@ -30,15 +30,17 @@ def login_spotify():
     )
     return RedirectResponse(auth_url)
 
-
 @router.get("/callback")
 async def spotify_callback(request: Request, code: str, db: Session = Depends(get_db)):
     logging.debug(f"Received authorization code: {code}")
 
+    if not code:
+        logging.error("Authorization code is missing.")
+        raise HTTPException(status_code=400, detail="Authorization code missing")
+
     if code in tokens:
         logging.error(f"Authorization code {code} has already been used.")
-        raise HTTPException(
-            status_code=400, detail="Authorization code already used.")
+        raise HTTPException(status_code=400, detail="Authorization code already used.")
 
     token_url = "https://accounts.spotify.com/api/token"
     payload = {
@@ -63,10 +65,8 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
         logging.debug(f"Token response data: {response_data}")
 
         if response.status_code != 200:
-            logging.error(f"Failed to get token: {
-                          response.status_code} - {response_data}")
-            raise HTTPException(
-                status_code=400, detail="Failed to obtain access token")
+            logging.error(f"Failed to get token: {response.status_code} - {response_data}")
+            raise HTTPException(status_code=400, detail="Failed to obtain access token")
 
         access_token = response_data.get("access_token")
         refresh_token = response_data.get("refresh_token")
@@ -83,35 +83,32 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             "Authorization": f"Bearer {access_token}"
         }
 
-        user_info_response = requests.get(
-            user_info_url, headers=user_info_headers)
-        user_info_data = user_info_response.json()
-
-        logging.debug(f"User info response status code: {
-                      user_info_response.status_code}")
-        logging.debug(f"User info response data: {user_info_data}")
+        user_info_response = requests.get(user_info_url, headers=user_info_headers)
+        logging.debug(f"User info request headers: {user_info_headers}")
+        logging.debug(f"User info response status code: {user_info_response.status_code}")
+        logging.debug(f"User info response text: {user_info_response.text}")
 
         if user_info_response.status_code != 200:
-            logging.error(f"Failed to get user info: {
-                          user_info_response.status_code} - {user_info_data}")
-            raise HTTPException(
-                status_code=400, detail="Failed to obtain user info")
+            logging.error(f"Failed to get user info: {user_info_response.status_code} - {user_info_response.text}")
+            raise HTTPException(status_code=400, detail="Failed to obtain user info")
+
+        user_info_data = user_info_response.json()
+        logging.debug(f"User info response data: {user_info_data}")
+
         spotify_user_id = user_info_data.get('id')
         user = get_user_by_spotify_id(db, spotify_user_id)
         if not user:
-            # Create new user if not exists
             user_create = UserCreate(
-                id=spotify_user_id,  # Update to "id"
+                id=spotify_user_id,
                 username=user_info_data.get('display_name'),
                 email=user_info_data.get('email'),
                 country=user_info_data.get('country'),
                 images=str(user_info_data.get('images')),
-                profile_url=user_info_data.get(
-                    'external_urls', {}).get('spotify')
+                profile_url=user_info_data.get('external_urls', {}).get('spotify')
             )
             user = create_user(db, user_create)
-            logging.info(f"Created new user with ID: {
-                         user.id}")  # Update to "id"
+            logging.info(f"Created new user with ID: {user.id}")
+
         token_create = SpotifyTokenCreate(
             access_token=access_token,
             refresh_token=refresh_token,
@@ -119,16 +116,13 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             expires_at=datetime.now() + timedelta(seconds=expires_in),
             scope=response_data.get('scope')
         )
-        create_or_update_spotify_token(
-            db, user.id, token_create)
-        logging.info(
-            f"Created/Updated Spotify token for user ID: {user.id}")
+        create_or_update_spotify_token(db, user.id, token_create)
+        logging.info(f"Created/Updated Spotify token for user ID: {user.id}")
         return JSONResponse(content=user_info_data)
 
     except Exception as e:
         logging.error(f"Error during token exchange: {str(e)}")
         raise HTTPException(status_code=400, detail="Token exchange failed")
-
 
 @router.get("/user")
 async def get_user(request: Request):
@@ -142,7 +136,11 @@ async def get_user(request: Request):
 async def logout_session(response: Response, request: Request):
     session_token = request.cookies.get("session_token")
     if session_token:
-        sessions.pop(session_token, None)
-        response.delete_cookie(key="session_token")
-        return {"message": "Logged out"}
+        if session_token in sessions:
+            sessions.pop(session_token)
+            response.delete_cookie(key="session_token")
+            return {"message": "Logged out"}
+        else:
+            raise HTTPException(status_code=401, detail="Invalid session token")
     raise HTTPException(status_code=401, detail="Not authenticated")
+
