@@ -17,4 +17,4 @@ typing                  # Type hints for Python
 apscheduler             # Advanced Python Scheduler
 pytz                    # Timezone definitions for Python
 spotipy                 # Spotify API wrapper
-psycopg2               # PostgreSQL driver
+psycopg2                # PostgreSQL driver

@@ -22,7 +22,6 @@ async def startup_event():
     logger.info("Tables created successfully (if they didn't exist).")
     scheduler.start()
     logger.info("Scheduler started.")
-    test_fetch_and_store_for_all_users()
 
 
 @app.on_event("shutdown")
