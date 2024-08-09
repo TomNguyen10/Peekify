@@ -45,7 +45,7 @@ def fetch_artist_from_spotify(artist_spotify_id: str, access_token: str) -> Arti
             images=str(new_artist.get('images')),
         )
     else:
-        raise Exception(f"Failed to fetch artist from Spotify: {
-                        response.status_code}")
+        raise Exception(f"""Failed to fetch artist from Spotify: {
+                        response.status_code}""")
 
     return updated_artist

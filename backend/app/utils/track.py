@@ -45,7 +45,7 @@ def fetch_track_from_spotify(track_spotify_id: str, access_token: str) -> TrackC
                                 for artist in new_track["artists"]]
         )
     else:
-        raise Exception(f"Failed to fetch track from Spotify: {
-                        response.status_code}")
+        raise Exception(f"""Failed to fetch track from Spotify: {
+                        response.status_code}""")
 
     return updated_track

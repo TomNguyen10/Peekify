@@ -1,20 +1,14 @@
-fastapi                 # FastAPI framework
-uvicorn                 # ASGI server for FastAPI
-sqlalchemy              # SQL toolkit and ORM for PostgreSQL
-pymongo                 # MongoDB driver
-asyncpg                 # Asynchronous PostgreSQL driver
-pymongo                 # MongoDB driver
-boto3                   # AWS SDK for Python (S3 operations)
-python-dotenv           # Python dotenv for managing environment variables
-uvicorn                 # ASGI server for FastAPI with standard features
-databases               # Async database support for Python
-config                  # Configuration management for Python
-datetime                # Date and time utilities for Python
-logging                 # Logging utilities for Python
-requests                # HTTP requests for Python
-pydantic                # Data validation and settings management using Python type annotations
-typing                  # Type hints for Python
-apscheduler             # Advanced Python Scheduler
-pytz                    # Timezone definitions for Python
-spotipy                 # Spotify API wrapper
-psycopg2                # PostgreSQL driver
+APScheduler==3.10.4
+asyncpg==0.29.0
+databases==0.9.0 
+fastapi==0.112.0
+pydantic==2.8.2
+pymongo==4.7.3
+python-dotenv==1.0.1
+pytz==2024.1
+psycopg2-binary==2.9.9
+Requests==2.32.3
+spotipy==2.24.0
+spotify==0.10.2
+SQLAlchemy==2.0.30
+uvicorn==0.30.5

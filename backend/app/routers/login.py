@@ -63,8 +63,9 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
         logging.debug(f"Token response data: {response_data}")
 
         if response.status_code != 200:
-            logging.error(f"Failed to get token: {
-                          response.status_code} - {response_data}")
+            logging.error(f"""Failed to get token: {
+                          response.status_code} - {response_data}""")
+
             raise HTTPException(
                 status_code=400, detail="Failed to obtain access token")
 
@@ -87,13 +88,13 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             user_info_url, headers=user_info_headers)
         user_info_data = user_info_response.json()
 
-        logging.debug(f"User info response status code: {
-                      user_info_response.status_code}")
+        logging.error(f"""User info response status code: {
+            user_info_response.status_code}""")
         logging.debug(f"User info response data: {user_info_data}")
 
         if user_info_response.status_code != 200:
-            logging.error(f"Failed to get user info: {
-                          user_info_response.status_code} - {user_info_data}")
+            logging.error(f"""Failed to get user info: {
+                          user_info_response.status_code} - {user_info_data}""")
             raise HTTPException(
                 status_code=400, detail="Failed to obtain user info")
         spotify_user_id = user_info_data.get('id')
@@ -101,7 +102,7 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
         if not user:
             # Create new user if not exists
             user_create = UserCreate(
-                id=spotify_user_id,  # Update to "id"
+                id=spotify_user_id,
                 username=user_info_data.get('display_name'),
                 email=user_info_data.get('email'),
                 country=user_info_data.get('country'),
@@ -110,8 +111,9 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
                     'external_urls', {}).get('spotify')
             )
             user = create_user(db, user_create)
-            logging.info(f"Created new user with ID: {
-                         user.id}")  # Update to "id"
+            logging.info(f"""Created new user with ID: {
+                         user.id}""")
+
         token_create = SpotifyTokenCreate(
             access_token=access_token,
             refresh_token=refresh_token,
