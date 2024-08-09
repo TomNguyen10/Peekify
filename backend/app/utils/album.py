@@ -49,7 +49,7 @@ def fetch_album_from_spotify(album_spotify_id: str, access_token: str) -> AlbumC
                                 for artist in new_album["artists"]]
         )
     else:
-        raise Exception(f"Failed to fetch album from Spotify: {
-                        response.status_code}")
+        raise Exception(f"""Failed to fetch album from Spotify: {
+                        response.status_code}""")
 
     return updated_album

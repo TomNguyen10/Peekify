@@ -41,8 +41,8 @@ def refresh_spotify_token(db: Session, user_id: str):
 
     # Check if the token will expire within the buffer time
     if datetime.now() + REFRESH_BUFFER < spotify_token.expires_at:
-        logging.info(f"Token for user {
-                     user_id} is still valid and not close to expiration")
+        logging.info(f"""Token for user {
+                     user_id} is still valid and not close to expiration""")
         return spotify_token
 
     # Token is expired or will expire soon, refresh it

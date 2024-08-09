@@ -106,6 +106,6 @@ def fetch_recently_played_tracks(access_token: str, limit: int = 50) -> List[dic
     if response.status_code == 200:
         return response.json()['items']
     else:
-        logging.error(f"Failed to fetch recently played tracks from Spotify: {
-                      response.status_code} {response.text}")
+        logging.error(f"""Failed to fetch recently played tracks from Spotify: {
+                      response.status_code} {response.text}""")
         response.raise_for_status()
