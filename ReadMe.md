@@ -18,7 +18,7 @@ npm install
 npm run dev
 ```
 
-# Running Backend
+## Running Backend
 Change the directory to the backend folder
 ```
 cd backend
