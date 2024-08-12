@@ -64,7 +64,7 @@ def setup_scheduler():
 
     # Token refresh job (runs at 2:30 AM, 5:30 AM, 8:30 AM, 11:30 AM, 2:30 PM, 5:30 PM, 8:30 PM, 11:30 PM EST)
     scheduler.add_job(refresh_all_tokens, CronTrigger(
-        hour="2,5,8,11,14,17,20,22,23", minute="30", timezone=est))
+        hour="2,5,8,11,14,17,20,23", minute="50", timezone=est))
     scheduler.add_job(test_fetch_and_store_for_all_users, CronTrigger(
-        hour="0,3,6,9,12,15,18,21,22", minute="31", timezone=est))
+        hour="0,3,6,9,12,15,18,21", minute="0", timezone=est))
     return scheduler
