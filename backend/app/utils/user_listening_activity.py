@@ -7,6 +7,7 @@ from datetime import datetime
 from utils.album import fetch_album_from_spotify, get_album_by_spotify_id, create_or_update_album
 from utils.artist import fetch_artist_from_spotify, get_artist_by_spotify_id, create_or_update_artist
 from utils.track import fetch_track_from_spotify, get_track_by_spotify_id, create_or_update_track
+from utils.audio_features import fetch_audio_features_from_spotify, get_audio_feature_by_track_id, create_or_update_audio_feature
 from config import SPOTIFY_API_BASE_URL
 import logging
 
@@ -68,6 +69,14 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
             if not existing_track:
                 track_data = fetch_track_from_spotify(track_id, access_token)
                 create_or_update_track(db, track_id, track_data)
+
+            existing_audio_feature = get_audio_feature_by_track_id(
+                db, track_id)
+            if not existing_audio_feature:
+                audio_feature_data = fetch_audio_features_from_spotify(
+                    track_id, access_token)
+                create_or_update_audio_feature(
+                    db, track_id, audio_feature_data)
 
             existing_activity = get_activity_by_ids(
                 db, user_spotify_id, track_id, played_at)

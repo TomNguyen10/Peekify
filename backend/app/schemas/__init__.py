@@ -3,4 +3,5 @@ from .album import Album, AlbumCreate, AlbumBase
 from .track import Track, TrackCreate, TrackBase
 from .user_listening_activity import UserListeningActivity, UserListeningActivityCreate, UserListeningActivityBase
 from .user import User, UserCreate, UserBase
-from .spotify_tokens import SpotifyToken, SpotifyTokenCreate, SpotifyTokenBase
+from .spotify_tokens import SpotifyToken, SpotifyTokenCreate
+from .audio_features import AudioFeature, AudioFeatureCreate, AudioFeatureBase
