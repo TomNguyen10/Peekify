@@ -3,7 +3,7 @@ from models.user_listening_activity import UserListeningActivity
 from schemas.user_listening_activity import UserListeningActivityCreate
 from typing import List
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 from utils.album import fetch_album_from_spotify, get_album_by_spotify_id, create_or_update_album
 from utils.artist import fetch_artist_from_spotify, get_artist_by_spotify_id, create_or_update_artist
 from utils.track import fetch_track_from_spotify, get_track_by_spotify_id, create_or_update_track
@@ -18,6 +18,15 @@ def get_activity_by_ids(db: Session, spotify_user_id: str, spotify_track_id: str
         UserListeningActivity.spotify_track_id == spotify_track_id,
         UserListeningActivity.activity_listened_at == activity_listened_at
     ).first()
+
+
+def parse_spotify_timestamp(timestamp_str: str) -> datetime:
+    try:
+        # Try parsing with microseconds, making it timezone-aware
+        return datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S.%fZ').replace(tzinfo=timezone.utc)
+    except ValueError:
+        # Fallback to parsing without microseconds, also making it timezone-aware
+        return datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S%z')
 
 
 def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, access_token: str) -> List[UserListeningActivity]:
@@ -43,10 +52,8 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
         played_at_str = item['played_at']
         played_at = datetime.fromisoformat(played_at_str.rstrip('Z'))
         # Convert played_at times to datetime objects
-        current_played_at = datetime.strptime(
-            item['played_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        next_played_at = datetime.strptime(
-            next_item['played_at'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        current_played_at = parse_spotify_timestamp(item['played_at'])
+        next_played_at = parse_spotify_timestamp(next_item['played_at'])
 
         # Calculate duration between consecutive tracks in milliseconds
         listened_duration_ms = (
