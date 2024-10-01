@@ -8,8 +8,8 @@ import requests
 from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 import logging
 
-# Define a buffer time (e.g., 30 minutes) to refresh the token before it expires
-REFRESH_BUFFER = timedelta(minutes=30)
+# Define a buffer time (e.g., 15 minutes) to refresh the token before it expires
+REFRESH_BUFFER = timedelta(minutes=15)
 
 
 def get_spotify_token(db: Session, user_id: int) -> SpotifyToken:

@@ -50,6 +50,7 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
         album_id = album['id']
         artists = track['artists']
         played_at_str = item['played_at']
+        logging.debug(f"Processing track {track_id} played at {played_at_str}")
         played_at = datetime.fromisoformat(played_at_str.rstrip('Z'))
         # Convert played_at times to datetime objects
         current_played_at = parse_spotify_timestamp(item['played_at'])
@@ -62,24 +63,31 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
         if listened_duration_ms >= min_play_duration_ms or listened_duration_ms >= min_play_duration_percentage * track['duration_ms']:
             existing_album = get_album_by_spotify_id(db, album_id)
             if not existing_album:
+                # logging.debug(f"Album {album_id} not found, fetching from Spotify")
                 album_data = fetch_album_from_spotify(album_id, access_token)
                 create_or_update_album(db, album_id, album_data)
 
             for artist in artists:
                 existing_artist = get_artist_by_spotify_id(db, artist['id'])
                 if not existing_artist:
+                    logging.debug(
+                        f"Artist {artist['id']} not found, fetching from Spotify")
+
                     artist_data = fetch_artist_from_spotify(
                         artist['id'], access_token)
                     create_or_update_artist(db, artist['id'], artist_data)
 
             existing_track = get_track_by_spotify_id(db, track_id)
             if not existing_track:
+                # logging.debug(f"Track {track_id} not found, fetching from Spotify")
                 track_data = fetch_track_from_spotify(track_id, access_token)
                 create_or_update_track(db, track_id, track_data)
 
             existing_audio_feature = get_audio_feature_by_track_id(
                 db, track_id)
             if not existing_audio_feature:
+                # logging.debug(f"Audio feature for track {track_id} not found, fetching from Spotify")
+
                 audio_feature_data = fetch_audio_features_from_spotify(
                     track_id, access_token)
                 create_or_update_audio_feature(
@@ -88,6 +96,7 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
             existing_activity = get_activity_by_ids(
                 db, user_spotify_id, track_id, played_at)
             if existing_activity:
+                # logging.debug(f"Activity for track {track_id} at {played_at} already exists for user {user_spotify_id}")
                 continue
 
             new_activity_data = UserListeningActivityCreate(
