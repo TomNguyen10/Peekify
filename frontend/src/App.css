@@ -37,3 +37,9 @@ html, body, #root {
   overflow-x: hidden;
   background-color: black;
 }
+
+.gradient-text {
+  background: linear-gradient(to right, #407642, #8BC34A); /* Change colors as needed */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

@@ -72,13 +72,17 @@ const App: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center justify-center w-1/2 h-full text-white text-3xl">
-            <h1 className="text-5xl font-bold text-green-400">
-              Welcome to Peekify
-            </h1>
-            <p className="text-sm p-5">Your Weekly Spotify Analysis</p>
-          </div>
-          <div className="flex justify-center items-center w-1/2 h-full">
+          <div className="flex flex-col items-end justify-center w-1/2 h-full text-white text-3xl"></div>
+          <div className="flex flex-col justify-center items-center w-1/2 h-full">
+            <div className="items-start">
+              <h1 className="text-5xl font-bold text-green-400 gradient-text text-transparent bg-clip-text">
+                Welcome to
+              </h1>
+              <h1 className="text-8xl font-bold text-green-400"> Peekify</h1>
+              <p className="text-sm pt-5 pb-5 text-white">
+                Your Weekly Spotify Analysis
+              </p>
+            </div>
             <LoginForm handleLogin={handleLogin} />
           </div>
         </>
