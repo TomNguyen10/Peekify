@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./App.css";
+import { Button } from "./components/ui/button";
+import { LoginForm } from "./components/LoginForm";
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -61,18 +64,24 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="h-screen w-full bg-black flex justify-center items-center overflow-x: hidden;">
       {isLoggedIn ? (
         <div>
           <h1>Welcome, {userInfo.display_name}</h1>
-          <button onClick={handleLogout}>Log Out</button>
+          <Button onClick={handleLogout}>Log Out</Button>
         </div>
       ) : (
-        <div className="center-login">
-          <h2>Welcome to Peekify</h2>
-          <p className="subtitle">Your weekly Spotify Analysis</p>
-          <button onClick={handleLogin}>Log in with Spotify</button>
-        </div>
+        <>
+          <div className="flex flex-col items-center justify-center w-1/2 h-full text-white text-3xl">
+            <h1 className="text-5xl font-bold text-green-400">
+              Welcome to Peekify
+            </h1>
+            <p className="text-sm p-5">Your Weekly Spotify Analysis</p>
+          </div>
+          <div className="flex justify-center items-center w-1/2 h-full">
+            <LoginForm handleLogin={handleLogin} />
+          </div>
+        </>
       )}
     </div>
   );
