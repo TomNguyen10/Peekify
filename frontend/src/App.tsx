@@ -48,11 +48,24 @@ const App: React.FC = () => {
     window.location.href = `${API_BASE_URL}/login/spotify`;
   };
 
+  // Logout function to call backend and reset state
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/logout`);
+      setIsLoggedIn(false);
+      setUserInfo(null);
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
+  };
+
   return (
     <div>
       {isLoggedIn ? (
         <div>
           <h1>Welcome, {userInfo.display_name}</h1>
+          <button onClick={handleLogout}>Log Out</button>
         </div>
       ) : (
         <div className="center-login">
