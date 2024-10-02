@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./App.css";
+import { Button } from "./components/ui/button";
+import { LoginForm } from "./components/LoginForm";
+import { Dashboard } from "./components/DashBoard";
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -61,18 +65,35 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="h-screen w-full bg-black flex justify-center items-center overflow-x: hidden;">
       {isLoggedIn ? (
         <div>
-          <h1>Welcome, {userInfo.display_name}</h1>
-          <button onClick={handleLogout}>Log Out</button>
+          <h1 className="text-white">Welcome, {userInfo.display_name}</h1>
+          {/* <Dashboard /> */}
+          <Button onClick={handleLogout}>Log Out</Button>
         </div>
       ) : (
-        <div className="center-login">
-          <h2>Welcome to Peekify</h2>
-          <p className="subtitle">Your weekly Spotify Analysis</p>
-          <button onClick={handleLogin}>Log in with Spotify</button>
-        </div>
+        <>
+          <div className="flex flex-col items-end justify-center w-1/2 h-full text-white text-3xl">
+            <img
+              src="../src/assets/Peekify-logo.png"
+              className="animate-spin-slow"
+              alt="Rotating Image"
+            />
+          </div>
+          <div className="flex flex-col justify-center items-center w-1/2 h-full">
+            <div className="items-start">
+              <h1 className="text-5xl font-bold text-green-400 gradient-text text-transparent bg-clip-text">
+                Welcome to
+              </h1>
+              <h1 className="text-8xl font-bold text-green-400"> Peekify</h1>
+              <p className="text-sm pt-5 pb-5 text-white">
+                Your Weekly Spotify Analysis
+              </p>
+            </div>
+            <LoginForm handleLogin={handleLogin} />
+          </div>
+        </>
       )}
     </div>
   );

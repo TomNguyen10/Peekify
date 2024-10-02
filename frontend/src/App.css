@@ -1,9 +1,4 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+
 
 .logo {
   height: 6em;
@@ -33,10 +28,18 @@
   }
 }
 
-.card {
-  padding: 2em;
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: black;
 }
 
-.read-the-docs {
-  color: #888;
+.gradient-text {
+  background: linear-gradient(to right, #407642, #8BC34A); /* Change colors as needed */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
