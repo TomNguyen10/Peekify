@@ -8,6 +8,9 @@ module.exports = {
   ],
   theme: {
   	extend: {
+		animation: {
+			'spin-slow': 'spin 3s linear infinite',
+		  },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
