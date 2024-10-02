@@ -40,28 +40,49 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export const description =
-  "An application shell with a header and main content area. The header has a navbar, a search input and and a user nav dropdown. The user nav is toggled by a button with an avatar image. The main content area is divided into two rows. The first row has a grid of cards with statistics. The second row has a grid of cards with a table of recent transactions and a list of recent sales.";
+interface DashboardProps {
+  handleLogout: () => Promise<void>;
+  userInfo: any;
+}
 
-export function Dashboard() {
+export const Dashboard: React.FC<DashboardProps> = ({
+  handleLogout,
+  userInfo,
+}) => {
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 rounded-sm w-full">
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+          <h1 className="text-black">Hello, {userInfo.display_name}</h1>
           <Link
             to="#"
-            className="flex items-center gap-2 text-lg font-semibold md:text-base"
-          >
-            <Package2 className="h-6 w-6" />
-            <span className="sr-only">Acme Inc</span>
-          </Link>
-          <Link
-            to="#"
-            className="text-foreground transition-colors hover:text-foreground"
+            className="text-foreground transition-colors hover:text-foreground "
           >
             Dashboard
           </Link>
+          <Link
+            to="#top-songs"
+            className="text-foreground transition-colors hover:text-foreground "
+          >
+            Top Songs
+          </Link>
+          <Link
+            to="#top-artists"
+            className="text-foreground transition-colors hover:text-foreground "
+          >
+            Top Artists
+          </Link>
+          <Link
+            to="#total-time"
+            className="text-foreground transition-colors hover:text-foreground "
+          >
+            Total Listening Time
+          </Link>
+          <Button onClick={handleLogout} className="hover:bg-green-600 ml-auto">
+            Log Out
+          </Button>
         </nav>
+
         <Sheet>
           <SheetTrigger asChild>
             <Button
@@ -88,34 +109,6 @@ export function Dashboard() {
             </nav>
           </SheetContent>
         </Sheet>
-        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-          <form className="ml-auto flex-1 sm:flex-initial">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search products..."
-                className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-              />
-            </div>
-          </form>
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="secondary" size="icon" className="rounded-full">
-                <CircleUser className="h-5 w-5" />
-                <span className="sr-only">Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-        </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -396,4 +389,4 @@ export function Dashboard() {
       </main>
     </div>
   );
-}
+};

@@ -68,9 +68,8 @@ const App: React.FC = () => {
     <div className="h-screen w-full bg-black flex justify-center items-center overflow-x: hidden;">
       {isLoggedIn ? (
         <div>
-          <h1 className="text-white">Welcome, {userInfo.display_name}</h1>
-          {/* <Dashboard /> */}
-          <Button onClick={handleLogout}>Log Out</Button>
+          <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
+          {/* <Button onClick={handleLogout}>Log Out</Button> */}
         </div>
       ) : (
         <>
