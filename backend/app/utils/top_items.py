@@ -114,3 +114,102 @@ def get_top_5_artists_last_week(db: Session, user_spotify_id: str):
         })
 
     return top_artists
+
+
+# Helper function to calculate start of the most recent Monday
+def get_most_recent_monday():
+    today = datetime.datetime.now()
+    # Move to the most recent Monday
+    monday = today - timedelta(days=today.weekday())
+    return monday.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def get_songs_per_day(db: Session, user_spotify_id: str):
+    monday = get_most_recent_monday()
+
+    # Group the listening activity by day
+    songs_per_day = (
+        db.query(func.date(UserListeningActivity.activity_listened_at),
+                 func.count(UserListeningActivity.spotify_track_id))
+        .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
+        .filter(UserListeningActivity.activity_listened_at >= monday)
+        .group_by(func.date(UserListeningActivity.activity_listened_at))
+        .order_by(func.date(UserListeningActivity.activity_listened_at))
+        .all()
+    )
+
+    return [{"date": date, "song_count": count} for date, count in songs_per_day]
+
+
+def get_top_songs_this_week(db: Session, user_spotify_id: str, limit=5):
+    monday = get_most_recent_monday()
+    today = datetime.datetime.now()
+
+    # Query for the top songs this week
+    top_songs_query = (
+        db.query(
+            UserListeningActivity.spotify_track_id,
+            func.count(UserListeningActivity.spotify_track_id).label(
+                'track_count')
+        )
+        .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
+        .filter(UserListeningActivity.activity_listened_at >= monday)
+        .filter(UserListeningActivity.activity_listened_at <= today)
+        .group_by(UserListeningActivity.spotify_track_id)
+        .order_by(desc('track_count'))
+        .limit(limit)
+        .all()
+    )
+
+    top_songs = []
+    for track_id, count in top_songs_query:
+        track = db.query(Track).filter(Track.id == track_id).first()
+        artist_names = (
+            db.query(Artist.name)
+            .filter(Artist.id.in_(track.artist_spotify_ids))
+            .all()
+        )
+        artist_names = [artist.name for artist in artist_names]
+
+        top_songs.append({
+            "track_name": track.name,
+            "artist_name": ", ".join(artist_names),
+            "play_count": count,
+        })
+
+    return top_songs
+
+
+def get_top_artists_this_week(db: Session, user_spotify_id: str, limit=5):
+    monday = get_most_recent_monday()
+    today = datetime.datetime.now()
+
+    # Query for the top artists this week
+    top_artists_query = (
+        db.query(Track.artist_spotify_ids, func.count(
+            Track.artist_spotify_ids).label("artist_count"))
+        .join(UserListeningActivity, UserListeningActivity.spotify_track_id == Track.id)
+        .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
+        .filter(UserListeningActivity.activity_listened_at >= monday)
+        .filter(UserListeningActivity.activity_listened_at <= today)
+        .group_by(Track.artist_spotify_ids)
+        .order_by(desc("artist_count"))
+        .limit(limit)
+        .all()
+    )
+
+    top_artists = []
+    for artist_ids, count in top_artists_query:
+        artist_names = (
+            db.query(Artist.name)
+            .filter(Artist.id.in_(artist_ids))
+            .all()
+        )
+        artist_names = [artist.name for artist in artist_names]
+
+        top_artists.append({
+            "artist_name": ", ".join(artist_names),
+            "play_count": count,
+        })
+
+    return top_artists
