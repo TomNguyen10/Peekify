@@ -3,7 +3,7 @@ import axios from "axios";
 import "./App.css";
 import { Button } from "./components/ui/button";
 import { LoginForm } from "./components/LoginForm";
-import { Dashboard } from "./components/DashBoard";
+import { Dashboard } from "./components/Dashboard";
 
 const API_BASE_URL = "http://localhost:8000";
 
