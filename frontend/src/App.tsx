@@ -67,26 +67,25 @@ const App: React.FC = () => {
   return (
     <div className="h-screen w-full bg-black flex justify-center items-center overflow-x: hidden;">
       {isLoggedIn ? (
-        <div>
-          <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
-          {/* <Button onClick={handleLogout}>Log Out</Button> */}
-        </div>
+        <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
       ) : (
         <>
-          <div className="flex flex-col items-end justify-center w-1/2 h-full text-white text-3xl">
+          <div className="flex flex-col items-end justify-center w-full md:w-1/2 h-full text-white text-3xl hidden sm:flex">
             <img
               src="../src/assets/Peekify-logo.png"
-              className="animate-spin-slow"
+              className="animate-spin-slow max-w-[150px] md:max-w-[200px] lg:max-w-[250px]"
               alt="Rotating Image"
             />
           </div>
-          <div className="flex flex-col justify-center items-center w-1/2 h-full">
-            <div className="items-start">
-              <h1 className="text-5xl font-bold text-green-400 gradient-text text-transparent bg-clip-text">
+          <div className="flex flex-col justify-center items-center w-full sm:w-3/4 md:w-1/2 h-full p-5">
+            <div className="items-start text-center md:text-left">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-green-400 gradient-text text-transparent bg-clip-text">
                 Welcome to
               </h1>
-              <h1 className="text-8xl font-bold text-green-400"> Peekify</h1>
-              <p className="text-sm pt-5 pb-5 text-white">
+              <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold text-green-400">
+                Peekify
+              </h1>
+              <p className="text-xs sm:text-sm md:text-base pt-5 pb-5 text-white">
                 Your Weekly Spotify Analysis
               </p>
             </div>
