@@ -65,12 +65,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-black flex justify-center items-center overflow-x: hidden;">
+    <div className="min-h-screen relative w-full bg-black flex flex-col md:flex-row justify-center items-center">
       {isLoggedIn ? (
         <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
       ) : (
         <>
-          <div className="flex flex-col items-end justify-center w-full md:w-1/2 h-full text-white text-3xl hidden sm:flex">
+          <div className="flex flex-col items-center justify-center w-full h-full md:w-1/2 text-white text-3xl sm:flex">
             <img
               src="../src/assets/Peekify-logo.png"
               className="animate-spin-slow max-w-[150px] md:max-w-[200px] lg:max-w-[250px]"

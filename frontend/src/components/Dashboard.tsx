@@ -96,8 +96,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6 rounded-sm w-full">
-        {/* <h1 className="text-black">Hello, {userInfo.display_name}</h1> */}
+      <header className="sticky top-0 flex h-16 items-center gap-4 bg-background px-4 md:px-6 rounded-sm w-full z-50">
         <nav className="hidden flex-grow flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link
             to="#"
@@ -116,12 +115,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
             className="text-foreground transition-colors hover:text-foreground "
           >
             Top Artists
-          </Link>
-          <Link
-            to="#total-time"
-            className="text-foreground transition-colors hover:text-foreground "
-          >
-            Total Listening Time
           </Link>
           <Link
             to="#top-song-per-day"
@@ -150,7 +143,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 to="#"
                 className="flex items-center gap-2 text-lg font-semibold"
               >
-                <span className="sr-only">Acme Inc</span>
+                <span className="sr-only"></span>
               </Link>
               <Link to="#" className="hover:text-foreground">
                 Dashboard
@@ -164,9 +157,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <Link to="#top-songs-per-day" className="hover:text-foreground">
                 Songs per Day
               </Link>
-              <Link to="#total-time" className="hover:text-foreground">
-                Total Listening Time
-              </Link>
               <Button
                 onClick={handleLogout}
                 className="hover:bg-green-600 ml-auto"
@@ -178,8 +168,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </Sheet>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4 ">
-          <Card x-chunk="dashboard-01-chunk-0 ">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Songs per Day
@@ -194,18 +184,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </p> */}
             </CardContent>
           </Card>
-          <Card x-chunk="dashboard-01-chunk-1">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Total Listening Time
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold"></div>
+              <div className="text-2xl font-bold">Hello</div>
               {/* <p className="text-xs text-muted-foreground">+180.1% from week</p> */}
             </CardContent>
           </Card>
-          <Card x-chunk="dashboard-01-chunk-2">
+          <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Total Songs Listened
@@ -256,8 +246,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <TableBody>
                   {topSongs
                     ? topSongs.map((song: any, index: number) => (
-                        <TableRow>
-                          <TableCell key={index}>
+                        <TableRow key={index}>
+                          <TableCell>
                             <div className="font-medium">{song.track_name}</div>
                           </TableCell>
                           <TableCell>{song.artist_name}</TableCell>
