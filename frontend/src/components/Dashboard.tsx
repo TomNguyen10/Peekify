@@ -61,18 +61,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const songsPerDayResponse = await axios.get(
-          `${API_BASE_URL}/top_items/songs-per-day`,
-          {
-            params: { user_spotify_id: userInfo.spotify_id },
-          }
-        );
-        setSongsPerDay(songsPerDayResponse.data.songs_per_day);
+        // const songsPerDayResponse = await axios.get(
+        //   `${API_BASE_URL}/top_items/songs-per-day`,
+        //   {
+        //     params: { user_spotify_id: userInfo.spotify_id },
+        //   }
+        // );
+        // setSongsPerDay(songsPerDayResponse.data.songs_per_day);
 
         const topSongsResponse = await axios.get(
           `${API_BASE_URL}/top_items/top-songs-this-week`,
           {
-            params: { user_spotify_id: userInfo.spotify_id },
+            params: { user_spotify_id: userInfo.id, limit: 10 },
           }
         );
         setTopSongs(topSongsResponse.data.top_songs);
@@ -80,7 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         const topArtistsResponse = await axios.get(
           `${API_BASE_URL}/top_items/top-artists-this-week`,
           {
-            params: { user_spotify_id: userInfo.spotify_id },
+            params: { user_spotify_id: userInfo.id },
           }
         );
         setTopArtists(topArtistsResponse.data.top_artists);
@@ -162,7 +162,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Top Artists
               </Link>
               <Link to="#top-songs-per-day" className="hover:text-foreground">
-                Top Songs per Day
+                Songs per Day
               </Link>
               <Link to="#total-time" className="hover:text-foreground">
                 Total Listening Time
@@ -250,25 +250,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <TableRow>
                     <TableHead>Track Name</TableHead>
                     <TableHead>Artist Name</TableHead>
-                    <TableHead className="hidden xl:table-column">
-                      Status
-                    </TableHead>
                     <TableHead className="text-right">Play Count</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>
-                      <div className="font-medium">False Alarm</div>
-                    </TableCell>
-                    <TableCell>The Weeknd</TableCell>
-                    <TableCell className="hidden xl:table-column">
-                      <Badge className="text-xs" variant="outline">
-                        Approved
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">3</TableCell>
-                  </TableRow>
+                  {topSongs
+                    ? topSongs.map((song: any, index: number) => (
+                        <TableRow>
+                          <TableCell key={index}>
+                            <div className="font-medium">{song.track_name}</div>
+                          </TableCell>
+                          <TableCell>{song.artist_name}</TableCell>
+                          <TableCell className="text-right">
+                            {song.play_count}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : "Loading..."}
                 </TableBody>
               </Table>
             </CardContent>
@@ -286,18 +284,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </Button>
             </CardHeader>
             <CardContent className="grid gap-8">
-              <div className="flex items-center gap-4">
-                <Avatar className="hidden h-9 w-9 sm:flex">
-                  <AvatarImage src="/avatars/01.png" alt="Avatar" />
-                  <AvatarFallback>PM</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <p className="text-sm font-medium leading-none">
-                    Post Malone
-                  </p>
-                </div>
-                <div className="ml-auto font-medium">3 songs</div>
-              </div>
+              {topArtists
+                ? topArtists.map((artist: any, index: number) => (
+                    <div className="flex items-center gap-4">
+                      <Avatar className="hidden h-9 w-9 sm:flex">
+                        <AvatarImage src="/avatars/01.png" alt="Avatar" />
+                        <AvatarFallback></AvatarFallback>
+                      </Avatar>
+                      <div className="grid gap-1">
+                        <p
+                          className="text-sm font-medium leading-none"
+                          key={index}
+                        >
+                          {artist.artist_name}
+                        </p>
+                      </div>
+                      <div className="ml-auto font-medium">
+                        {artist.play_count} plays
+                      </div>
+                    </div>
+                  ))
+                : "Loading..."}
             </CardContent>
           </Card>
         </div>
