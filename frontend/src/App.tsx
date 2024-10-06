@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom"; // Import Router and Routes
+import { BrowserRouter as Router, useNavigate } from "react-router-dom"; // Import Router and Routes
 
 import axios from "axios";
 import "./App.css";
 
-import { Dashboard } from "./components/Dashboard";
 import { LoginPage } from "./pages/LoginPage";
-import { Navbar } from "./components/Navbar";
 import { HomePage } from "./pages/HomePage";
 
 const API_BASE_URL = "http://localhost:8000";
@@ -45,6 +38,7 @@ const App: React.FC = () => {
 
           // Redirect to the main page after login
           window.history.replaceState({}, document.title, "/");
+          //window.location.reload();
         } catch (error: any) {
           console.error(
             "Failed to login:",
@@ -77,33 +71,12 @@ const App: React.FC = () => {
     <Router>
       <div>
         {isLoggedIn ? (
-          // <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
-          // <>
-          //   <Navbar handleLogout={handleLogout} />
-          //   <Routes>
-          //     <Route path="/" element={<Navigate to="/dashboard" />} />
-          //     <Route
-          //       path="/dashboard"
-          //       element={
-          //         <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
-          //       }
-          //     />
-          //     {/* <Route path="/top-artists" element={<TopArtists />} /> */}
-          //   </Routes>
-          // </>
           <HomePage handleLogout={handleLogout} userInfo={userInfo} />
         ) : (
           <LoginPage handleLogin={handleLogin} />
         )}
       </div>
     </Router>
-    // <div className="min-h-screen relative w-full bg-black flex flex-col md:flex-row justify-center items-center">
-    //   {isLoggedIn ? (
-    //     <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
-    //   ) : (
-    //     <LoginPage handleLogin={handleLogin} />
-    //   )}
-    // </div>
   );
 };
 
