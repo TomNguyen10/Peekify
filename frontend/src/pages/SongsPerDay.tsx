@@ -16,7 +16,7 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "./ui/chart";
+} from "../components/ui/chart";
 
 export const description = "A multiple bar chart";
 
@@ -40,7 +40,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function Component() {
+export function SongsPerDay() {
   return (
     <Card>
       <CardHeader>

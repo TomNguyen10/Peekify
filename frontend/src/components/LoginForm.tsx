@@ -11,7 +11,7 @@ export function LoginForm({ handleLogin }: LoginFormProps) {
       <CardContent>
         <Button
           type="button"
-          className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded text-black"
+          className="w-full sm:w-auto bg-green-500 hover:bg-green-600 font-bold py-2 px-4 rounded text-black"
           onClick={handleLogin}
         >
           Login with Spotify
