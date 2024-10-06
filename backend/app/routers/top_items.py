@@ -4,6 +4,7 @@ from data.postgresql import get_db
 from utils.top_items import (
     get_songs_per_day,
     get_top_songs_this_week,
+    get_top_albums_this_week,
     get_top_artists_this_week
 )
 
@@ -14,7 +15,7 @@ router = APIRouter()
 def songs_per_day(user_spotify_id: str, db: Session = Depends(get_db)):
     try:
         result = get_songs_per_day(db, user_spotify_id)
-        return {"songs_per_day": result}
+        return result
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error fetching songs per day: {str(e)}")
@@ -24,7 +25,17 @@ def songs_per_day(user_spotify_id: str, db: Session = Depends(get_db)):
 def top_songs_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depends(get_db)):
     try:
         result = get_top_songs_this_week(db, user_spotify_id, limit)
-        return {"top_songs": result}
+        return result
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error fetching top songs: {str(e)}")
+
+
+@router.get("/top_items/top-albums-this-week")
+def top_songs_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depends(get_db)):
+    try:
+        result = get_top_albums_this_week(db, user_spotify_id, limit)
+        return result
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error fetching top songs: {str(e)}")
@@ -34,7 +45,7 @@ def top_songs_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depe
 def top_artists_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depends(get_db)):
     try:
         result = get_top_artists_this_week(db, user_spotify_id, limit)
-        return {"top_artists": result}
+        return result
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error fetching top artists: {str(e)}")
