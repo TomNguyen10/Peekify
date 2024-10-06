@@ -40,15 +40,16 @@ export const HomePage: React.FC<HomePageProps> = ({
       <Navbar handleLogout={handleLogout} />
       <Routes>
         <Route path="/" element={<Home userInfo={userInfo} />} />
+        <Route path="/dashboard" element={<Dashboard userInfo={userInfo} />} />
+        <Route path="/top-songs" element={<TopSongs userInfo={userInfo} />} />
         <Route
-          path="/dashboard"
-          element={
-            <Dashboard handleLogout={handleLogout} userInfo={userInfo} />
-          }
+          path="/top-artists"
+          element={<TopArtists userInfo={userInfo} />}
         />
-        <Route path="/top-songs" element={<TopSongs />} />
-        <Route path="/top-artists" element={<TopArtists />} />
-        <Route path="/songs-per-day" element={<SongsPerDay />} />
+        <Route
+          path="/songs-per-day"
+          element={<SongsPerDay userInfo={userInfo} />}
+        />
       </Routes>
     </>
   );
