@@ -74,21 +74,7 @@ cd app
 uvicorn main:app --reload
 ```
 
-## Option 2: Using Local Docker (Require docker desktop installation)
-
-Build the docker image and name it to peekify
-
-```
-docker build -t peekify .
-```
-
-Run a new container with the newly built image and also name it peekify
-
-```
-docker run --name peekify -d -p 8000:8000 peekify
-```
-
-## Option 3: Running Docker Image on Docker Hub (Require docker desktop installation) (Recommended)
+## Option 2: Running Docker Image on Docker Hub (Require docker desktop installation) (Recommended)
 
 Pull the docker image from tom10117/peekify
 
