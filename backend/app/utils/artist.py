@@ -49,3 +49,9 @@ def fetch_artist_from_spotify(artist_spotify_id: str, access_token: str) -> Arti
                         response.status_code}""")
 
     return updated_artist
+
+
+def get_artist_names(db: Session, artist_ids):
+    artist_names = db.query(Artist.name).filter(
+        Artist.id.in_(artist_ids)).all()
+    return [artist.name for artist in artist_names]

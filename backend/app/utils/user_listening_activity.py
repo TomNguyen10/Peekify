@@ -1,15 +1,21 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import func, any_
+from sqlalchemy.orm import Session, aliased
 from models.user_listening_activity import UserListeningActivity
 from schemas.user_listening_activity import UserListeningActivityCreate
 from typing import List
 import requests
 from datetime import datetime, timezone
-from utils.album import fetch_album_from_spotify, get_album_by_spotify_id, create_or_update_album
-from utils.artist import fetch_artist_from_spotify, get_artist_by_spotify_id, create_or_update_artist
-from utils.track import fetch_track_from_spotify, get_track_by_spotify_id, create_or_update_track
-from utils.audio_features import fetch_audio_features_from_spotify, get_audio_feature_by_track_id, create_or_update_audio_feature
+from models.track import Track
+from models.album import Album
+from models.artist import Artist
+from utils.album import fetch_album_from_spotify, create_or_update_album
+from utils.artist import fetch_artist_from_spotify, create_or_update_artist
+from utils.track import fetch_track_from_spotify, create_or_update_track
+from utils.audio_features import fetch_audio_features_from_spotify, create_or_update_audio_feature
 from config import SPOTIFY_API_BASE_URL
+from utils.time import get_date_range_for_last_week
 import logging
+import pandas as pd
 
 
 def get_activity_by_ids(db: Session, spotify_user_id: str, spotify_track_id: str, activity_listened_at: datetime) -> UserListeningActivity:
@@ -117,3 +123,34 @@ def fetch_recently_played_tracks(access_token: str, limit: int = 50) -> List[dic
         logging.error(f"""Failed to fetch recently played tracks from Spotify: {
                       response.status_code} {response.text}""")
         response.raise_for_status()
+
+
+def get_last_week_listening_activities(db: Session, user_spotify_id: str):
+    last_monday, last_sunday = get_date_range_for_last_week()
+
+    ArtistAlias = aliased(Artist)
+
+    activities = (db.query(UserListeningActivity,
+                           Track.name.label('track_name'),
+                           Album.name.label('album_name'),
+                           func.array_agg(ArtistAlias.name).label('artist_names'))
+                  .join(Track, UserListeningActivity.spotify_track_id == Track.id)
+                  .join(Album, Track.album_spotify_id == Album.id)
+                  .join(ArtistAlias, ArtistAlias.id == any_(Track.artist_spotify_ids))
+                  .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
+                  .filter(UserListeningActivity.activity_listened_at >= last_monday)
+                  .filter(UserListeningActivity.activity_listened_at <= last_sunday)
+                  .group_by(UserListeningActivity.id, Track.name, Album.name)
+                  .order_by(UserListeningActivity.activity_listened_at)
+                  .all())
+
+    data = [{
+        "spotify_track_id": activity.spotify_track_id,
+        "track_name": track_name,
+        "album_name": album_name,
+        "artist_names": ', '.join(artist_names),
+        "activity_listened_at": activity.activity_listened_at
+    } for activity, track_name, album_name, artist_names in activities]
+
+    df = pd.DataFrame(data)
+    return df
