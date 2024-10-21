@@ -25,7 +25,7 @@ export const Dashboard: React.FC = () => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem("userInfo");
+    const storedUserInfo = sessionStorage.getItem("userInfo");
     if (storedUserInfo) {
       setUserInfo(JSON.parse(storedUserInfo)); 
     }
