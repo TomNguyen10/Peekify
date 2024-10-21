@@ -5,9 +5,8 @@ import {
   Navigate,
 } from "react-router-dom";
 
-
 export const HomePage: React.FC = () => {
-  const jsonString = localStorage.getItem("userInfo");
+  const jsonString = sessionStorage.getItem("userInfo");
   let userInfo;
   if (jsonString) {
     userInfo = JSON.parse(jsonString);

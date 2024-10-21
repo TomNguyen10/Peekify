@@ -32,7 +32,8 @@ const App: React.FC = () => {
           console.log("User info response:", response.data);
           localStorage.setItem("login", "true");
           const jsonString = JSON.stringify(response.data);
-          localStorage.setItem("userInfo", jsonString);
+          //localStorage.setItem("userInfo", jsonString);
+          sessionStorage.setItem("userInfo", jsonString);
           window.location.href = "/home";
         } catch (error: any) {
           console.error(
