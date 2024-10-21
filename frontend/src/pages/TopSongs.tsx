@@ -13,15 +13,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface TopSongsProps {
-  userInfo: any;
-}
-
 const API_BASE_URL = "http://localhost:8000";
 
-export const TopSongs: React.FC<TopSongsProps> = ({ userInfo }) => {
+export const TopSongs: React.FC = () => {
   const [topSongs, setTopSongs] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
 
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo)); 
+    }
+  }, []);
   // Fetch songs per day, top songs, and top artists data
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +64,7 @@ export const TopSongs: React.FC<TopSongsProps> = ({ userInfo }) => {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-right">No.</TableHead>
                   <TableHead>Track Name</TableHead>
                   <TableHead>Artist Name</TableHead>
                   <TableHead>Play Count</TableHead>
@@ -70,6 +74,7 @@ export const TopSongs: React.FC<TopSongsProps> = ({ userInfo }) => {
                 {topSongs && topSongs.length > 0 ? (
                   topSongs.map((song: any, index: number) => (
                     <TableRow key={index}>
+                      <TableCell className="text-right">{index + 1}</TableCell>
                       <TableCell>
                         <div className="font-medium">{song.track_name}</div>
                       </TableCell>
@@ -82,7 +87,7 @@ export const TopSongs: React.FC<TopSongsProps> = ({ userInfo }) => {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center">
-                      No top songs found.
+                      Loading...
                     </TableCell>
                   </TableRow>
                 )}

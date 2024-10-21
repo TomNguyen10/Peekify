@@ -25,6 +25,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../components/ui/chart";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 export const description = "A multiple bar chart";
 
@@ -39,17 +40,23 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface SongsPerDayProps {
-  userInfo: any;
-}
 
 const API_BASE_URL = "http://localhost:8000";
 
-export const SongsPerDay: React.FC<SongsPerDayProps> = ({ userInfo }) => {
+export const SongsPerDay: React.FC = () => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [weekRange, setWeekRange] = useState<string>("");
   const [totalSongs, setTotalSongs] = useState<number>(0); // State for total songs
   const [totalListeningTime, setTotalListeningTime] = useState<number>(0); // State for total listening time
+  const [topAlbum, setTopAlbum] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo)); // Parse the JSON string
+    }
+  }, []);
 
   // Calculate the week range from Monday to Sunday
   useEffect(() => {
@@ -79,117 +86,61 @@ export const SongsPerDay: React.FC<SongsPerDayProps> = ({ userInfo }) => {
   // Fetch the songs per day data
   useEffect(() => {
     const fetchSongsPerDayData = async () => {
-      try {
-        const songsPerDayResponse = await axios.get(
-          `${API_BASE_URL}/top_items/songs-per-day`,
-          {
-            params: { user_spotify_id: userInfo.id },
-          }
-        );
-        const data = songsPerDayResponse.data;
+      if (userInfo && userInfo.id) {
+        try {
+          const songsPerDayResponse = await axios.get(
+            `${API_BASE_URL}/top_items/songs-per-day`,
+            {
+              params: { user_spotify_id: userInfo.id },
+            }
+          );
+          const data = songsPerDayResponse.data;
 
-        // Transform the response to match the chartData structure
-        const transformedData = data.map((item: any) => ({
-          day: item.day,
-          song_count: item.song_count,
-          total_duration_seconds: item.total_duration_seconds, // Include total duration
-        }));
+          // Transform the response to match the chartData structure
+          const transformedData = data.map((item: any) => ({
+            day: item.day,
+            song_count: item.song_count,
+            total_duration_seconds: item.total_duration_seconds, // Include total duration
+          }));
 
-        setChartData(transformedData);
+          setChartData(transformedData);
 
-        // Calculate the total songs listened in the week
-        const total = transformedData.reduce(
-          (acc: number, item: { song_count: number }) => acc + item.song_count,
-          0
-        );
-        setTotalSongs(total);
+          // Calculate the total songs listened in the week
+          const total = transformedData.reduce(
+            (acc: number, item: { song_count: number }) => acc + item.song_count,
+            0
+          );
+          setTotalSongs(total);
 
-        // Calculate the total listening time in hours
-        const totalTime = transformedData.reduce(
-          (acc: number, item: { total_duration_seconds: number }) =>
-            acc + item.total_duration_seconds,
-          0
-        );
-        setTotalListeningTime(totalTime / 3600000); // Convert seconds to hours
-      } catch (error) {
-        console.error("Failed to fetch songs per day data:", error);
+          // Calculate the total listening time in hours
+          const totalTime = transformedData.reduce(
+            (acc: number, item: { total_duration_seconds: number }) =>
+              acc + item.total_duration_seconds,
+            0
+          );
+          setTotalListeningTime(totalTime / 360000); // Convert seconds to hours
+
+          const albumResponse = await axios.get(
+            `${API_BASE_URL}/top_items/top-albums-this-week`,
+            {
+              params: { user_spotify_id: userInfo.id, limit: 4 },
+            }
+          );
+          const albumData = albumResponse.data;
+          setTopAlbum(albumData);
+        } catch (error) {
+          console.error("Failed to fetch songs per day data:", error);
+        }
       }
     };
 
-    fetchSongsPerDayData();
-  }, []);
+    // Fetch only if userInfo is available
+    if (userInfo) {
+      fetchSongsPerDayData();
+    }
+  }, [userInfo]);
 
   return (
-    // <div className="flex min-h-screen w-full p-4 md:p-8">
-    //   <div className="flex w-full gap-6">
-    //     <Card className="w-1/2">
-    //       <CardHeader>
-    //         <CardTitle>Songs Per Day</CardTitle>
-    //         <CardDescription>{weekRange}</CardDescription>
-    //       </CardHeader>
-    //       <CardContent>
-    //         <ChartContainer config={chartConfig}>
-    //           <BarChart data={chartData}>
-    //             <CartesianGrid vertical={false} />
-    //             <XAxis
-    //               dataKey="day"
-    //               tickLine={false}
-    //               tickMargin={10}
-    //               axisLine={false}
-    //               tickFormatter={(value) => value.slice(0, 3)}
-    //             />
-    //             <ChartTooltip
-    //               cursor={false}
-    //               content={<ChartTooltipContent indicator="dashed" />}
-    //             />
-    //             <Bar
-    //               dataKey="song_count"
-    //               fill="var(--color-desktop)"
-    //               radius={4}
-    //             />
-    //           </BarChart>
-    //         </ChartContainer>
-    //       </CardContent>
-    //     </Card>
-
-    //     <div className="flex flex-col w-1/2 gap-4">
-    //       <Card>
-    //         <CardHeader>
-    //           <CardTitle className="text-sm font-medium">
-    //             Total Listening Time
-    //           </CardTitle>
-    //         </CardHeader>
-    //         <CardContent>
-    //           <div className="text-2xl font-bold">
-    //             {totalListeningTime.toFixed(2)} hours
-    //           </div>
-    //         </CardContent>
-    //       </Card>
-    //       <Card>
-    //         <CardHeader>
-    //           <CardTitle className="text-sm font-medium">
-    //             Total Songs Listened
-    //           </CardTitle>
-    //         </CardHeader>
-    //         <CardContent>
-    //           <div className="text-2xl font-bold">{totalSongs}</div>
-    //         </CardContent>
-    //       </Card>
-    //       <Card>
-    //         <CardHeader>
-    //           <CardTitle className="text-sm font-medium">
-    //             Average Songs Per Day
-    //           </CardTitle>
-    //         </CardHeader>
-    //         <CardContent>
-    //           <div className="text-2xl font-bold">
-    //             {(totalSongs / 7).toFixed(2)}
-    //           </div>
-    //         </CardContent>
-    //       </Card>
-    //     </div>
-    //   </div>
-    // </div>
     <div className="container mx-auto px-4 py-8">
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="md:col-span-1">
@@ -197,29 +148,27 @@ export const SongsPerDay: React.FC<SongsPerDayProps> = ({ userInfo }) => {
             <CardTitle>Songs Per Day</CardTitle>
             <CardDescription>{weekRange}</CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px] md:h-[400px] lg:h-[500px]">
+          <CardContent className="h-[300px] md:h-[400px] lg:h-[500px] items-center">
             <ChartContainer config={chartConfig}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="day"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                  />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dashed" />}
-                  />
-                  <Bar
-                    dataKey="song_count"
-                    fill="var(--color-desktop)"
-                    radius={4}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              <BarChart data={chartData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.slice(0, 3)}
+                />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dashed" />}
+                />
+                <Bar
+                  dataKey="song_count"
+                  fill="var(--color-desktop)"
+                  radius={4}
+                />
+              </BarChart>
             </ChartContainer>
           </CardContent>
         </Card>
@@ -260,43 +209,43 @@ export const SongsPerDay: React.FC<SongsPerDayProps> = ({ userInfo }) => {
               </div>
             </CardContent>
           </Card>
+
+          <Card className="mb-5">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium">
+                Your Top Album
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {topAlbum && topAlbum.length > 0 ? (
+                topAlbum.map((album: any, index: number) => (
+                  <div
+                    className="flex items-center gap-4 pt-3 pb-3"
+                    key={index}
+                  >
+                    <Avatar className="hidden h-9 w-9 sm:flex">
+                      <AvatarImage
+                        src={album.album_image_64x64}
+                        alt={album.name}
+                      />
+                      <AvatarFallback />
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <p className="text-md font-medium leading-none">
+                        {album.name}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      {album.play_count} plays
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div>No top album found.</div>
+              )}
+            </CardContent>
+          </Card>
         </div>
-        {/* <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Total Listening Time
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {totalListeningTime.toFixed(2)} hours
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Total Songs Listened
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalSongs}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Average Songs Per Day
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {(totalSongs / 7).toFixed(2)}
-            </div>
-          </CardContent>
-        </Card> */}
       </div>
     </div>
   );

@@ -6,16 +6,7 @@ import { ArrowUpRight, Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@frontend/src/components/ui/dropdown-menu.tsx";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
 import SongsPerDay from "@/pages/SongsPerDay";
 import {
   Table,
@@ -26,17 +17,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface DashboardProps {
-  userInfo: any;
-}
-
 const API_BASE_URL = "http://localhost:8000";
 
-export const Dashboard: React.FC<DashboardProps> = ({ userInfo }) => {
+export const Dashboard: React.FC = () => {
   const [topSongs, setTopSongs] = useState<any>(null);
   const [topArtists, setTopArtists] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
 
-  // Fetch songs per day, top songs, and top artists data
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo)); 
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,7 +47,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userInfo }) => {
             "Unexpected format for top songs:",
             topSongsResponse.data
           );
-          setTopSongs([]); // Set to an empty array or handle as needed
+          setTopSongs([]); 
         }
 
         const topArtistsResponse = await axios.get(
@@ -88,7 +82,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userInfo }) => {
           Your Music Dashboard
         </h1>
         <div className="mt-8">
-          <SongsPerDay userInfo={userInfo} />
+          <SongsPerDay />
         </div>
         <div className="grid gap-8 md:grid-cols-2">
           <Card>
@@ -106,20 +100,24 @@ export const Dashboard: React.FC<DashboardProps> = ({ userInfo }) => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>No.</TableHead>
                     <TableHead>Track Name</TableHead>
                     <TableHead>Artist Name</TableHead>
-                    <TableHead>Play Count</TableHead>
+                    <TableHead className="text-left">Play Count</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {topSongs && topSongs.length > 0 ? (
                     topSongs.map((song: any, index: number) => (
                       <TableRow key={index}>
+                        <TableCell className="text-center">
+                          {index + 1}
+                        </TableCell>
                         <TableCell>
                           <div className="font-medium">{song.track_name}</div>
                         </TableCell>
                         <TableCell>{song.artist_name}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-left">
                           {song.play_count}
                         </TableCell>
                       </TableRow>

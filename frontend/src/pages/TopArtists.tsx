@@ -6,14 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface TopArtistsProps {
-  userInfo: any;
-}
 
 const API_BASE_URL = "http://localhost:8000";
 
-export const TopArtists: React.FC<TopArtistsProps> = ({ userInfo }) => {
+export const TopArtists: React.FC = () => {
   const [topArtists, setTopArtists] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const storedUserInfo = localStorage.getItem("userInfo");
+    if (storedUserInfo) {
+      setUserInfo(JSON.parse(storedUserInfo)); 
+    }
+  }, []);
 
   // Fetch songs per day, top songs, and top artists data
   useEffect(() => {
@@ -73,7 +78,7 @@ export const TopArtists: React.FC<TopArtistsProps> = ({ userInfo }) => {
                 </div>
               ))
             ) : (
-              <div>No top artists found.</div>
+              <div>Loading...</div>
             )}
           </CardContent>
         </Card>
