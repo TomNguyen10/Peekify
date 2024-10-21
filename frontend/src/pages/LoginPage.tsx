@@ -1,8 +1,14 @@
 import React from "react";
-import { LoginForm } from "@/components/LoginForm";
+import axios from "axios";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+
+const API_BASE_URL = "http://localhost:8000";
 
 interface LoginPageProps {
-  handleLogin: () => void; // Define the correct type here
+  handleLogin: () => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ handleLogin }) => {
@@ -27,7 +33,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ handleLogin }) => {
             Your Weekly Spotify Analysis
           </p>
         </div>
-        <LoginForm handleLogin={handleLogin} />
+        
+        <Card className="mx-auto w-full max-w-sm bg-black border-black">
+          <CardContent>
+            <Button
+              type="button"
+              className="w-full sm:w-auto bg-green-500 hover:bg-green-600 font-bold py-2 px-4 rounded text-black"
+              onClick={handleLogin}
+            >
+              Login with Spotify
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
