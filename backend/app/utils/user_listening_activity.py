@@ -1,4 +1,4 @@
-from sqlalchemy import func, any_
+from sqlalchemy import func, any_, and_, String
 from sqlalchemy.orm import Session, aliased
 from models.user_listening_activity import UserListeningActivity
 from schemas.user_listening_activity import UserListeningActivityCreate
@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from models.track import Track
 from models.album import Album
 from models.artist import Artist
+from models.audio_features import AudioFeature
 from utils.album import fetch_album_from_spotify, create_or_update_album
 from utils.artist import fetch_artist_from_spotify, create_or_update_artist
 from utils.track import fetch_track_from_spotify, create_or_update_track
@@ -130,27 +131,79 @@ def get_last_week_listening_activities(db: Session, user_spotify_id: str):
 
     ArtistAlias = aliased(Artist)
 
-    activities = (db.query(UserListeningActivity,
-                           Track.name.label('track_name'),
-                           Album.name.label('album_name'),
-                           func.array_agg(ArtistAlias.name).label('artist_names'))
-                  .join(Track, UserListeningActivity.spotify_track_id == Track.id)
-                  .join(Album, Track.album_spotify_id == Album.id)
-                  .join(ArtistAlias, ArtistAlias.id == any_(Track.artist_spotify_ids))
-                  .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
-                  .filter(UserListeningActivity.activity_listened_at >= last_monday)
-                  .filter(UserListeningActivity.activity_listened_at <= last_sunday)
-                  .group_by(UserListeningActivity.id, Track.name, Album.name)
-                  .order_by(UserListeningActivity.activity_listened_at)
-                  .all())
+    activities = (db.query(
+        UserListeningActivity.activity_listened_at,
+        Track.name.label('track_name'),
+        Track.duration_ms.label('track_duration'),
+        Track.popularity.label('track_popularity'),
+        Album.name.label('album_name'),
+        Album.release_date.label('album_release_date'),
+        Album.total_tracks.label('album_total_tracks'),
+        Album.genres.label('album_genres'),
+        func.string_agg(ArtistAlias.name, ', ').label('artist_names'),
+        func.string_agg(ArtistAlias.genres[1], ', ').label('artist_genres'),
+        func.string_agg(func.cast(ArtistAlias.popularity, String),
+                        ', ').label('artist_popularity'),
+        AudioFeature.danceability,
+        AudioFeature.energy,
+        AudioFeature.key,
+        AudioFeature.loudness,
+        AudioFeature.mode,
+        AudioFeature.speechiness,
+        AudioFeature.acousticness,
+        AudioFeature.instrumentalness,
+        AudioFeature.liveness,
+        AudioFeature.valence,
+        AudioFeature.tempo
+    )
+        .join(Track, UserListeningActivity.spotify_track_id == Track.id)
+        .join(Album, Track.album_spotify_id == Album.id)
+        .join(AudioFeature, Track.id == AudioFeature.id)
+        .join(ArtistAlias, ArtistAlias.id == any_(Track.artist_spotify_ids))
+        .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
+        .filter(and_(
+            UserListeningActivity.activity_listened_at >= last_monday,
+            UserListeningActivity.activity_listened_at <= last_sunday
+        ))
+        .group_by(
+        UserListeningActivity.activity_listened_at,
+        Track.name, Track.duration_ms, Track.popularity,
+        Album.name, Album.release_date, Album.total_tracks, Album.genres,
+        AudioFeature.danceability, AudioFeature.energy, AudioFeature.key,
+        AudioFeature.loudness, AudioFeature.mode, AudioFeature.speechiness,
+        AudioFeature.acousticness, AudioFeature.instrumentalness,
+        AudioFeature.liveness, AudioFeature.valence, AudioFeature.tempo
+    )
+        .order_by(UserListeningActivity.activity_listened_at)
+        .all())
 
+    # Unpacking query results properly
     data = [{
-        "spotify_track_id": activity.spotify_track_id,
+        "activity_listened_at": activity_listened_at,
         "track_name": track_name,
+        "track_duration": track_duration,
+        "track_popularity": track_popularity,
         "album_name": album_name,
-        "artist_names": ', '.join(artist_names),
-        "activity_listened_at": activity.activity_listened_at
-    } for activity, track_name, album_name, artist_names in activities]
+        "album_release_date": album_release_date,
+        "album_total_tracks": album_total_tracks,
+        "album_genres": album_genres,
+        "artist_names": artist_names,
+        "artist_genres": artist_genres,
+        "artist_popularity": artist_popularity,
+        "danceability": danceability,
+        "energy": energy,
+        "key": key,
+        "loudness": loudness,
+        "mode": mode,
+        "speechiness": speechiness,
+        "acousticness": acousticness,
+        "instrumentalness": instrumentalness,
+        "liveness": liveness,
+        "valence": valence,
+        "tempo": tempo
+    } for activity_listened_at, track_name, track_duration, track_popularity, album_name, album_release_date, album_total_tracks, album_genres,
+        artist_names, artist_genres, artist_popularity, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo in activities]
 
+    # Create DataFrame for manipulation
     df = pd.DataFrame(data)
     return df

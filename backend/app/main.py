@@ -6,8 +6,13 @@ from routers import login, top_items
 from utils.cron_jobs import setup_scheduler
 import logging
 from models import User
-from utils.top_items import get_top_5_tracks_last_week, get_top_5_artists_last_week, get_songs_per_day
 from utils.user_listening_activity import get_last_week_listening_activities
+from langchain.agents.agent_types import AgentType
+from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
+from langchain_openai import ChatOpenAI
+import pandas as pd
+from config import OPENAI_API_KEY
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -30,7 +35,16 @@ async def startup_event():
     for i in range(len(users) - 1):
         user = users[i]
         df = get_last_week_listening_activities(db, user.id)
-        df.to_csv("test.csv", index=False)
+        agent = create_pandas_dataframe_agent(
+            ChatOpenAI(temperature=1, model="gpt-3.5-turbo",
+                       api_key=OPENAI_API_KEY),
+            df,
+            agent_type=AgentType.OPENAI_FUNCTIONS,
+            allow_dangerous_code=True,
+            verbose=True,
+        )
+        agent.invoke(
+            "What time of day do I listen to music the most?")
 
 
 @app.on_event("shutdown")
