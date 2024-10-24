@@ -15,7 +15,7 @@ router = APIRouter()
 
 sessions = {}
 tokens = {}
-SCOPE = "user-read-email user-read-private user-read-recently-played"
+SCOPE = "user-read-email user-read-private user-read-recently-played user-top-read"
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -84,7 +84,8 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             "Authorization": f"Bearer {access_token}"
         }
 
-        user_info_response = requests.get(user_info_url, headers=user_info_headers)
+        user_info_response = requests.get(
+            user_info_url, headers=user_info_headers)
         user_info_data = user_info_response.json()
 
         logging.error(f"""User info response status code: {
