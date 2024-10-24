@@ -1,12 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from data.postgresql import get_db
+from config import SPOTIFY_API_BASE_URL
 from utils.top_items import (
     get_songs_per_day,
     get_top_songs_this_week,
     get_top_albums_this_week,
     get_top_artists_this_week
 )
+import requests
+
 
 router = APIRouter()
 
@@ -49,3 +52,29 @@ def top_artists_this_week(user_spotify_id: str, limit: int = 5, db: Session = De
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Error fetching top artists: {str(e)}")
+
+
+@router.get("/top_items/top-tracks")
+def top_tracks(access_token: str, limit: int = 5, time_range: str = "medium_term"):
+    try:
+        headers = {"Authorization": f"Bearer {access_token}"}
+        params = {"limit": limit, "time_range": time_range}
+        response = requests.get(
+            f"{SPOTIFY_API_BASE_URL}/me/top/tracks", headers=headers, params=params)
+        return response.json()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error fetching top tracks from API: {str(e)}")
+
+
+@router.get("/top_items/top-artists")
+def top_tracks(access_token: str, limit: int = 5, time_range: str = "medium_term"):
+    try:
+        headers = {"Authorization": f"Bearer {access_token}"}
+        params = {"limit": limit, "time_range": time_range}
+        response = requests.get(
+            f"{SPOTIFY_API_BASE_URL}/me/top/artists", headers=headers, params=params)
+        return response.json()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Error fetching top artists from API: {str(e)}")
