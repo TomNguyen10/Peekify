@@ -30,21 +30,6 @@ async def startup_event():
     logger.info("Tables created successfully (if they didn't exist).")
     scheduler.start()
     logger.info("Scheduler started.")
-    db = SessionLocal()
-    users = db.query(User).all()
-    for i in range(len(users) - 1):
-        user = users[i]
-        df = get_last_week_listening_activities(db, user.id)
-        agent = create_pandas_dataframe_agent(
-            ChatOpenAI(temperature=1, model="gpt-3.5-turbo",
-                       api_key=OPENAI_API_KEY),
-            df,
-            agent_type=AgentType.OPENAI_FUNCTIONS,
-            allow_dangerous_code=True,
-            verbose=True,
-        )
-        agent.invoke(
-            "What time of day do I listen to music the most?")
 
 
 @app.on_event("shutdown")

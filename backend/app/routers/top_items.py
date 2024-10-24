@@ -32,7 +32,7 @@ def top_songs_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depe
 
 
 @router.get("/top_items/top-albums-this-week")
-def top_songs_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depends(get_db)):
+def top_albums_this_week(user_spotify_id: str, limit: int = 5, db: Session = Depends(get_db)):
     try:
         result = get_top_albums_this_week(db, user_spotify_id, limit)
         return result
