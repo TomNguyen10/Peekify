@@ -1,9 +1,7 @@
 import React from "react";
-import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState, useEffect } from "react";
 
 interface LoginPageProps {
   handleLogin: () => void;
@@ -14,7 +12,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ handleLogin }) => {
     <div className="min-h-screen relative w-full bg-black flex flex-col md:flex-row justify-center items-center">
       <div className="flex flex-col items-center justify-center w-full h-full md:w-1/2 text-white text-3xl sm:flex">
         <img
-          src="../src/assets/Peekify-logo.png"
+          src="/Peekify-logo.png"
           className="animate-spin-slow max-w-[150px] md:max-w-[200px] lg:max-w-[250px]"
           alt="Rotating Image"
         />
@@ -31,14 +29,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ handleLogin }) => {
             Your Weekly Spotify Analysis
           </p>
         </div>
-        
+
         <Card className="mx-auto w-full max-w-sm bg-black border-black">
           <CardContent>
             <Button
               type="button"
               className="w-full sm:w-auto bg-green-500 hover:bg-green-600 font-bold py-2 px-4 rounded text-black"
-              onClick={handleLogin}
-            >
+              onClick={handleLogin}>
               Login with Spotify
             </Button>
           </CardContent>

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
-import axios from "axios";
 
 interface NavbarProps {
   handleLogout: () => Promise<void>;
@@ -14,42 +13,36 @@ export const Navbar: React.FC<NavbarProps> = ({ handleLogout }) => {
       <nav className="hidden flex-grow flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           to="/home"
-          className="text-foreground transition-colors hover:text-foreground "
-        >
+          className="text-foreground transition-colors hover:text-foreground ">
           <img
-            src="../../src/assets/Peekify-logo-3.png"
+            src="/Peekify-logo-3.png"
             alt="peekify logo"
             className="w-auto h-7 object-contain"
           />
         </Link>
         <Link
           to="/home"
-          className="text-foreground transition-colors hover:text-foreground "
-        >
+          className="text-foreground transition-colors hover:text-foreground ">
           Home
         </Link>
         <Link
           to="/dashboard"
-          className="text-foreground transition-colors hover:text-foreground "
-        >
+          className="text-foreground transition-colors hover:text-foreground ">
           Dashboard
         </Link>
         <Link
           to="/top-songs"
-          className="text-foreground transition-colors hover:text-foreground "
-        >
+          className="text-foreground transition-colors hover:text-foreground ">
           Top Songs
         </Link>
         <Link
           to="/top-artists"
-          className="text-foreground transition-colors hover:text-foreground "
-        >
+          className="text-foreground transition-colors hover:text-foreground ">
           Top Artists
         </Link>
         <Link
           to="/songs-per-day"
-          className="text-foreground transition-colors hover:text-foreground "
-        >
+          className="text-foreground transition-colors hover:text-foreground ">
           Songs per Day
         </Link>
         <Button onClick={handleLogout} className="hover:bg-green-600 ml-auto">
@@ -66,10 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({ handleLogout }) => {
         <SheetContent side="left">
           <nav className="grid gap-6 text-lg font-medium">
             <Link to="/home">
-              <img
-                src="../../src/assets/Peekify-logo-2.png"
-                alt="peekify logo"
-              />
+              <img src="/Peekify-logo-2.png" alt="peekify logo" />
             </Link>
             <Link to="/home" className="hover:text-foreground">
               Home
@@ -88,8 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({ handleLogout }) => {
             </Link>
             <Button
               onClick={handleLogout}
-              className="hover:bg-green-600 ml-auto"
-            >
+              className="hover:bg-green-600 ml-auto">
               Log Out
             </Button>
           </nav>
