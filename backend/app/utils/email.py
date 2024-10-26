@@ -5,7 +5,7 @@ from jinja2 import Template
 from config import SENDER_EMAIL, SENDER_PASSWORD
 
 
-def send_top_songs_email(user_email: str, top_songs: list, top_artists: list, personalized_message: str):
+def send_email(user_email: str, top_songs: list, top_artists: list, personalized_message: str):
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
     sender_email = SENDER_EMAIL
@@ -47,6 +47,46 @@ def send_top_songs_email(user_email: str, top_songs: list, top_artists: list, pe
     <body>
         <h1>Weekly Music Report</h1>
         
+        <h2>Top 5 Most Listened-to Songs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Track Name</th>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Play Count</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for song in top_songs %}
+                <tr>
+                    <td>{{ song['track_name'] }}</td>
+                    <td>{{ song['artist_name'] }}</td>
+                    <td>{{ song['album_name'] }}</td>
+                    <td>{{ song['play_count'] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        
+        <h2>Top 5 Most Listened-to Artists</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Artist Name</th>
+                    <th>Play Count</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for artist in top_artists %}
+                <tr>
+                    <td>{{ artist['artist_name'] }}</td>
+                    <td>{{ artist['play_count'] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        
         <div class="personalized-message">
             <h2>Your Personalized Insights</h2>
             {% for paragraph in personalized_message.split('\n\n') %}
@@ -54,7 +94,6 @@ def send_top_songs_email(user_email: str, top_songs: list, top_artists: list, pe
             {% endfor %}
         </div>
         
-        <!-- Rest of the template remains unchanged -->
     </body>
     </html>
     """

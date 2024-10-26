@@ -1,17 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from data.postgresql import create_tables, SessionLocal
+from data.postgresql import create_tables
 from routers import login, top_items
 from utils.cron_jobs import setup_scheduler
+from config import FRONTEND_URL
 import logging
-from models import User
-from utils.user_listening_activity import get_last_week_listening_activities
-from langchain.agents.agent_types import AgentType
-from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-from langchain_openai import ChatOpenAI
-import pandas as pd
-from config import OPENAI_API_KEY
 
 
 # Configure logging
@@ -41,7 +35,7 @@ def shutdown_event():
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

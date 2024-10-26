@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
 from datetime import datetime
 import calendar
+import requests
+import logging
 from models.user_listening_activity import UserListeningActivity
 from models.track import Track
 from models.artist import Artist
@@ -130,3 +132,16 @@ def get_top_albums_this_week(db: Session, user_spotify_id: str, limit=5):
         "album_image_64x64": get_image_url(parse_images(album_record.images), 64)
     } for album_id, count in top_albums_query
         for album_record in [db.query(Album.name, Album.images).filter(Album.id == album_id).first()]]
+
+
+def get_user_top_items_from_spotify(access_token: str, item_type: str, time_range: str, limit: int = 20):
+    top_items_url = f"https://api.spotify.com/v1/me/top/{item_type}"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    params = {"time_range": time_range, "limit": limit}
+    response = requests.get(top_items_url, headers=headers, params=params)
+    if response.status_code == 200:
+        return response.json().get("items", [])
+    else:
+        logging.error(f"""Failed to get top {item_type} for {time_range}: {
+                      response.status_code} - {response.json()}""")
+        return []

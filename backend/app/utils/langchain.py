@@ -7,7 +7,7 @@ import pandas as pd
 from sqlalchemy.orm import Session
 
 
-def get_personalize_message(db: Session, user_spotify_id: str):
+def get_personalize_message(db: Session, user_spotify_id: str, user_name: str) -> str:
     db = SessionLocal()
     try:
         df = get_last_week_listening_activities(db, user_spotify_id)
@@ -30,20 +30,8 @@ def get_personalize_message(db: Session, user_spotify_id: str):
             return_intermediate_steps=True
         )
 
-        prompt = """
-        As a data scientist and therapist, analyze your customer's Spotify listening data from the past week. Write a diary-style letter to your customer with the following structure:
-
-        1. Opening: Briefly summarize the week's listening activities.
-        2. Body: Provide a detailed analysis of the data, including:
-           - Key metrics 
-           - Notable patterns 
-           - Interesting insights 
-        Please be specific and provide insights that are relevant.
-        3. Conclusion: Summarize the week, focusing on emotions or moods inferred from the data.
-        4. Recommendations: Write a wish or a note for the upcoming week.
-        
-        Be creative, thorough, and empathetic in your analysis. Use specific examples from the data to support your insights.
-        Limit your response to about 500 words.
+        prompt = f"""
+        As a data scientist and therapist, analyze your customer {user_name}'s Spotify listening data from the past week. Write a diary-style letter to your customer with the following structure: Top 3 most interesting insights or metrics, and top 3 emotions inferred from the data, as bullet points. Each bullet not gonna exceeds 10 words. End the letter with a wish or a note for the upcoming week infer from the data. The entire letter should not exceed 200 words.
         """
 
         response = agent.invoke(prompt)
