@@ -101,7 +101,6 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
         spotify_user_id = user_info_data.get('id')
         user = get_user_by_spotify_id(db, spotify_user_id)
         if not user:
-            # Create new user if not exists
             user_create = UserCreate(
                 id=spotify_user_id,
                 username=user_info_data.get('display_name'),

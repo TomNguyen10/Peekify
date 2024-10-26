@@ -40,7 +40,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-
 const API_BASE_URL = "http://localhost:8000";
 
 export const SongsPerDay: React.FC = () => {
@@ -107,7 +106,8 @@ export const SongsPerDay: React.FC = () => {
 
           // Calculate the total songs listened in the week
           const total = transformedData.reduce(
-            (acc: number, item: { song_count: number }) => acc + item.song_count,
+            (acc: number, item: { song_count: number }) =>
+              acc + item.song_count,
             0
           );
           setTotalSongs(total);
@@ -118,7 +118,7 @@ export const SongsPerDay: React.FC = () => {
               acc + item.total_duration_seconds,
             0
           );
-          setTotalListeningTime(totalTime / 360000); // Convert seconds to hours
+          setTotalListeningTime(totalTime / 3600000); // Convert seconds to hours
 
           const albumResponse = await axios.get(
             `${API_BASE_URL}/top_items/top-albums-this-week`,
@@ -221,8 +221,7 @@ export const SongsPerDay: React.FC = () => {
                 topAlbum.map((album: any, index: number) => (
                   <div
                     className="flex items-center gap-4 pt-3 pb-3"
-                    key={index}
-                  >
+                    key={index}>
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage
                         src={album.album_image_64x64}

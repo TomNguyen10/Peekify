@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
+from sqlalchemy.sql import text
 from datetime import datetime
 import calendar
 import requests
@@ -11,6 +12,9 @@ from models.album import Album
 from utils.artist import get_artist_names
 from utils.time import get_date_range_for_last_week, get_most_recent_monday
 from utils.image import parse_images, get_image_url
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_top_items(db: Session, user_spotify_id: str, start_date, end_date, group_by, limit=5):
@@ -100,24 +104,43 @@ def get_top_songs_this_week(db: Session, user_spotify_id: str, limit=5):
 
 
 def get_top_artists_this_week(db: Session, user_spotify_id: str, limit=5):
-    monday = get_most_recent_monday()
-    today = datetime.now()
-    top_artists_query = get_top_items(
-        db, user_spotify_id, monday, today, Track.artist_spotify_ids, limit)
+    try:
+        monday = get_most_recent_monday()
+        today = datetime.now()
 
-    top_artists = []
-    for artist_ids, count in top_artists_query:
-        artist_records = db.query(Artist.name, Artist.images).filter(
-            Artist.id.in_(artist_ids)).all()
-        for artist in artist_records:
+        subquery = (db.query(Track.artist_spotify_ids, func.count(UserListeningActivity.id).label('play_count'))
+                    .join(UserListeningActivity, UserListeningActivity.spotify_track_id == Track.id)
+                    .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
+                    .filter(UserListeningActivity.activity_listened_at >= monday)
+                    .filter(UserListeningActivity.activity_listened_at <= today)
+                    .group_by(Track.artist_spotify_ids)
+                    .subquery())
+
+        top_artists_query = (db.query(Artist.id, Artist.name, Artist.images, func.sum(subquery.c.play_count).label('total_play_count'))
+                             .filter(text(f"{subquery.c.artist_spotify_ids} @> ARRAY[artists.id]"))
+                             .group_by(Artist.id, Artist.name, Artist.images)
+                             .order_by(desc('total_play_count'))
+                             .limit(limit)
+                             .all())
+
+        top_artists = []
+        for artist in top_artists_query:
             images = parse_images(artist.images)
             top_artists.append({
                 "artist_name": artist.name,
-                "play_count": count,
+                "play_count": artist.total_play_count,
                 "image_160x160": get_image_url(images, 160)
             })
 
-    return top_artists
+        return top_artists
+
+    except Exception as e:
+        logger.error("Error fetching top artists this week: %s", e)
+        raise
+
+    except Exception as e:
+        logger.error("Error fetching top artists this week: %s", e)
+        raise
 
 
 def get_top_albums_this_week(db: Session, user_spotify_id: str, limit=5):
