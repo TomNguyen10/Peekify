@@ -1,33 +1,29 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from jinja2 import Template  # Import Jinja2 Template
+from jinja2 import Template
 from config import SENDER_EMAIL, SENDER_PASSWORD
 
-# Email sending function
 
-
-def send_top_songs_email(user_email: str, top_songs: list, top_artists: list):
-    # Define the SMTP email server (Gmail)
+def send_email(user_email: str, top_songs: list, top_artists: list, personalized_message: str):
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
-    sender_email = SENDER_EMAIL  # Your Gmail address
-    sender_password = SENDER_PASSWORD  # The App Password generated above
+    sender_email = SENDER_EMAIL
+    sender_password = SENDER_PASSWORD
 
-    # Email subject and recipient
-    subject = "Your Top 5 Most Listened Tracks and Artists From Last Week"
+    subject = "Your Weekly Music Report and Personalized Insights"
 
-    # HTML email template using Jinja2
     html_template = """
     <html>
     <head>
         <style>
-            body { font-family: Arial, sans-serif; color: #333; }
+            body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; }
             h1 { color: #4CAF50; }
-            h2 { color: #333; }
+            h2 { color: #333; margin-top: 20px; }
             table {
                 width: 100%;
                 border-collapse: collapse;
+                margin-bottom: 20px;
             }
             th, td {
                 padding: 10px;
@@ -37,11 +33,14 @@ def send_top_songs_email(user_email: str, top_songs: list, top_artists: list):
             th {
                 background-color: #f2f2f2;
             }
-            ol {
-                padding-left: 20px;
+            .personalized-message {
+                background-color: #f9f9f9;
+                border-left: 5px solid #4CAF50;
+                padding: 15px;
+                margin-bottom: 20px;
             }
-            li {
-                margin-bottom: 10px;
+            .personalized-message p {
+                margin-bottom: 15px;
             }
         </style>
     </head>
@@ -88,31 +87,38 @@ def send_top_songs_email(user_email: str, top_songs: list, top_artists: list):
             </tbody>
         </table>
         
-        <p>Keep up the good vibes!</p>
-        <p>Best, <br>Your Music App Team</p>
+        <div class="personalized-message">
+            <h2>Your Personalized Insights</h2>
+            {% for paragraph in personalized_message.split('\n\n') %}
+                <p>{{ paragraph }}</p>
+            {% endfor %}
+        </div>
+        
     </body>
     </html>
     """
 
-    # Render the HTML template with Jinja2
+    # Ensure personalized_message has double line breaks between paragraphs
+    formatted_personalized_message = "\n\n".join(
+        personalized_message.split('\n'))
+
     template = Template(html_template)
     rendered_html = template.render(
-        top_songs=top_songs, top_artists=top_artists)
+        top_songs=top_songs,
+        top_artists=top_artists,
+        personalized_message=formatted_personalized_message
+    )
 
-    # Create the email message
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = sender_email
     msg["To"] = user_email
 
-    # Attach the rendered HTML content to the email
     msg.attach(MIMEText(rendered_html, "html"))
 
-    # Send the email using Gmail's SMTP server
     try:
         with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()  # Start TLS encryption
-            # Login with email and App Password
+            server.starttls()
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, user_email, msg.as_string())
         print(f"Email sent successfully to {user_email}")

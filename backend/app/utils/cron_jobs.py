@@ -4,8 +4,9 @@ from data.postgresql import SessionLocal
 from models.user import User
 from utils.spotify_tokens import refresh_spotify_token, get_spotify_token
 from utils.user_listening_activity import fetch_and_store_recent_user_activity
+from utils.langchain import get_personalize_message
 from utils.top_items import get_top_5_tracks_last_week, get_top_5_artists_last_week
-from utils.email import send_top_songs_email
+from utils.email import send_email
 import logging
 from datetime import datetime
 from pytz import timezone
@@ -69,7 +70,9 @@ def send_weekly_email():
             try:
                 top_tracks = get_top_5_tracks_last_week(db, user.id)
                 top_artists = get_top_5_artists_last_week(db, user.id)
-                send_top_songs_email(user.email, top_tracks, top_artists)
+                personalized_message = get_personalize_message(db, user.id)
+                send_email(user.email, top_tracks,
+                           top_artists, personalized_message)
                 logging.info(
                     f"Sending weekly email to user {user.id} {user.username} ({user.email})")
             except Exception as e:

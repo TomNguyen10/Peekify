@@ -6,6 +6,7 @@ from schemas.user import UserCreate
 from schemas.spotify_tokens import SpotifyTokenCreate
 from utils.user import get_user_by_spotify_id, create_user
 from utils.spotify_tokens import create_or_update_spotify_token
+from utils.top_items import get_user_top_items_from_spotify
 from data.postgresql import get_db
 from datetime import datetime, timedelta
 import logging
@@ -125,6 +126,24 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
             db, user.id, token_create)
         logging.info(
             f"Created/Updated Spotify token for user ID: {user.id}")
+
+        top_items = {
+            "short_term": {
+                "top_artists": get_user_top_items_from_spotify(access_token, "artists", "short_term"),
+                "top_tracks": get_user_top_items_from_spotify(access_token, "tracks", "short_term")
+            },
+            "medium_term": {
+                "top_artists": get_user_top_items_from_spotify(access_token, "artists", "medium_term"),
+                "top_tracks": get_user_top_items_from_spotify(access_token, "tracks", "medium_term")
+            },
+            "long_term": {
+                "top_artists": get_user_top_items_from_spotify(access_token, "artists", "long_term"),
+                "top_tracks": get_user_top_items_from_spotify(access_token, "tracks", "long_term")
+            }
+        }
+
+        user_info_data["top_items"] = top_items
+        logging.info(f"User info data: {user_info_data}")
         return JSONResponse(content=user_info_data)
 
     except Exception as e:

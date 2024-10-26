@@ -4,7 +4,9 @@ import uvicorn
 from data.postgresql import create_tables
 from routers import login, top_items
 from utils.cron_jobs import setup_scheduler
+from config import FRONTEND_URL
 import logging
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -33,7 +35,7 @@ def shutdown_event():
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[FRONTEND_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
