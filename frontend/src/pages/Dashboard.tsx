@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const Dashboard: React.FC = () => {
   const [topSongs, setTopSongs] = useState<any>(null);
@@ -125,7 +125,7 @@ export const Dashboard: React.FC = () => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={3} className="text-center">
-                        No top songs found.
+                        No top songs found. Or please come back later.
                       </TableCell>
                     </TableRow>
                   )}

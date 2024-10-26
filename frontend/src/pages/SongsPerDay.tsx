@@ -41,7 +41,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const SongsPerDay: React.FC = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -118,7 +118,7 @@ export const SongsPerDay: React.FC = () => {
               acc + item.total_duration_seconds,
             0
           );
-          setTotalListeningTime(totalTime / 360000); // Convert seconds to hours
+          setTotalListeningTime(totalTime / 3600000); // Convert seconds to hours
 
           const albumResponse = await axios.get(
             `${API_BASE_URL}/top_items/top-albums-this-week`,
@@ -241,7 +241,7 @@ export const SongsPerDay: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div>No top album found.</div>
+                <div>No top album found. Or please come back later</div>
               )}
             </CardContent>
           </Card>
