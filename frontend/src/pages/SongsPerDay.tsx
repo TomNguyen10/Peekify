@@ -40,7 +40,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const API_BASE_URL = "http://localhost:8000";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const SongsPerDay: React.FC = () => {
   const [chartData, setChartData] = useState<any[]>([]);
@@ -240,7 +241,7 @@ export const SongsPerDay: React.FC = () => {
                   </div>
                 ))
               ) : (
-                <div>No top album found.</div>
+                <div>No top album found. Or please come back later</div>
               )}
             </CardContent>
           </Card>

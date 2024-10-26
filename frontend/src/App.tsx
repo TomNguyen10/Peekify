@@ -11,7 +11,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
 import { Navbar } from "./components/Navbar";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,9 +30,8 @@ const App: React.FC = () => {
             `${API_BASE_URL}/callback?code=${code}`
           );
           console.log("User info response:", response.data);
-          localStorage.setItem("login", "true");
+          sessionStorage.setItem("login", "true");
           const jsonString = JSON.stringify(response.data);
-          //localStorage.setItem("userInfo", jsonString);
           sessionStorage.setItem("userInfo", jsonString);
           window.location.href = "/home";
         } catch (error: any) {
@@ -54,7 +53,7 @@ const App: React.FC = () => {
   const handleLogout = async () => {
     try {
       await axios.post(`${API_BASE_URL}/logout`);
-      localStorage.clear();
+      sessionStorage.clear();
       window.location.href = "/";
     } catch (error) {
       console.error("Failed to log out:", error);
@@ -62,7 +61,7 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const storedLogin = localStorage.getItem("login");
+    const storedLogin = sessionStorage.getItem("login");
     if (storedLogin === "true") {
       setIsLoggedIn(true);
     } else {

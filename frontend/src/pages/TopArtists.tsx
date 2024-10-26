@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 export const TopArtists: React.FC = () => {
   const [topArtists, setTopArtists] = useState<any>(null);
@@ -77,7 +78,7 @@ export const TopArtists: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div>Loading...</div>
+              <div>Loading... or please come back later</div>
             )}
           </CardContent>
         </Card>
