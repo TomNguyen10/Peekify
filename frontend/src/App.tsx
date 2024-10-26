@@ -11,7 +11,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
 import { Navbar } from "./components/Navbar";
 
-const API_BASE_URL = "https://peekify.vercel.app/";
+const API_BASE_URL = "http://localhost:8000";
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
