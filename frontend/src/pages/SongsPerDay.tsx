@@ -1,13 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  ResponsiveContainer,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -15,7 +8,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -39,7 +31,6 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
-
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
