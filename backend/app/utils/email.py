@@ -98,7 +98,6 @@ def send_email(user_email: str, top_songs: list, top_artists: list, personalized
     </html>
     """
 
-    # Ensure personalized_message has double line breaks between paragraphs
     formatted_personalized_message = "\n\n".join(
         personalized_message.split('\n'))
 

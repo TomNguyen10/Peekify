@@ -70,7 +70,8 @@ def send_weekly_email():
             try:
                 top_tracks = get_top_5_tracks_last_week(db, user.id)
                 top_artists = get_top_5_artists_last_week(db, user.id)
-                personalized_message = get_personalize_message(db, user.id)
+                personalized_message = get_personalize_message(
+                    db, user.id, user.username)
                 send_email(user.email, top_tracks,
                            top_artists, personalized_message)
                 logging.info(

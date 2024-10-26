@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 export const TopArtists: React.FC = () => {
   const [topArtists, setTopArtists] = useState<any>(null);
@@ -16,7 +16,7 @@ export const TopArtists: React.FC = () => {
   useEffect(() => {
     const storedUserInfo = sessionStorage.getItem("userInfo");
     if (storedUserInfo) {
-      setUserInfo(JSON.parse(storedUserInfo)); 
+      setUserInfo(JSON.parse(storedUserInfo));
     }
   }, []);
 
@@ -27,7 +27,7 @@ export const TopArtists: React.FC = () => {
         const topArtistsResponse = await axios.get(
           `${API_BASE_URL}/top_items/top-artists-this-week`,
           {
-            params: { user_spotify_id: userInfo.id, limit: 10 },
+            params: { user_spotify_id: userInfo.id, limit: 20 },
           }
         );
         if (Array.isArray(topArtistsResponse.data)) {

@@ -107,7 +107,8 @@ export const SongsPerDay: React.FC = () => {
 
           // Calculate the total songs listened in the week
           const total = transformedData.reduce(
-            (acc: number, item: { song_count: number }) => acc + item.song_count,
+            (acc: number, item: { song_count: number }) =>
+              acc + item.song_count,
             0
           );
           setTotalSongs(total);
@@ -221,8 +222,7 @@ export const SongsPerDay: React.FC = () => {
                 topAlbum.map((album: any, index: number) => (
                   <div
                     className="flex items-center gap-4 pt-3 pb-3"
-                    key={index}
-                  >
+                    key={index}>
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage
                         src={album.album_image_64x64}
