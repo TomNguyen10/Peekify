@@ -80,9 +80,9 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
             track_data = fetch_track_from_spotify(track_id, access_token)
             create_or_update_track(db, track_id, track_data)
 
-            audio_feature_data = fetch_audio_features_from_spotify(
-                track_id, access_token)
-            create_or_update_audio_feature(db, track_id, audio_feature_data)
+            # audio_feature_data = fetch_audio_features_from_spotify(
+            #     track_id, access_token)
+            # create_or_update_audio_feature(db, track_id, audio_feature_data)
 
             existing_activity = get_activity_by_ids(
                 db, user_spotify_id, track_id, played_at)
