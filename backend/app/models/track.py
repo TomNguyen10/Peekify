@@ -17,7 +17,5 @@ class Track(Base):
     artist_spotify_ids = Column(ARRAY(String))
 
     album = relationship("Album", back_populates="tracks")
-    audio_features = relationship(
-        "AudioFeature", back_populates="track", uselist=False)
     listening_activities = relationship(
         "UserListeningActivity", back_populates="track")

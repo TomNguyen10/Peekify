@@ -1,3 +1,6 @@
+# Remove since Spotify API stop providing audio features for tracks
+
+
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from data.postgresql import Base
@@ -19,5 +22,3 @@ class AudioFeature(Base):
     valence = Column(Float)
     tempo = Column(Float)
     time_signature = Column(Integer)
-
-    track = relationship("Track", back_populates="audio_features")

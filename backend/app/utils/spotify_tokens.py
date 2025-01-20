@@ -59,7 +59,6 @@ def refresh_spotify_token(db: Session, user_id: str):
 
     new_token_info = response.json()
 
-    # Update token in database
     token_update = SpotifyTokenCreate(
         access_token=new_token_info['access_token'],
         token_type=new_token_info['token_type'],

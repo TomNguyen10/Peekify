@@ -1,3 +1,5 @@
+# Remove since Spotify API stop providing audio features for tracks
+
 from pydantic import BaseModel
 
 

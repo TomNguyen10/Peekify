@@ -8,11 +8,9 @@ from datetime import datetime, timezone
 from models.track import Track
 from models.album import Album
 from models.artist import Artist
-from models.audio_features import AudioFeature
 from utils.album import fetch_album_from_spotify, create_or_update_album
 from utils.artist import fetch_artist_from_spotify, create_or_update_artist
 from utils.track import fetch_track_from_spotify, create_or_update_track
-from utils.audio_features import fetch_audio_features_from_spotify, create_or_update_audio_feature
 from config import SPOTIFY_API_BASE_URL
 from utils.time import get_date_range_for_last_week
 import logging
@@ -80,10 +78,6 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
             track_data = fetch_track_from_spotify(track_id, access_token)
             create_or_update_track(db, track_id, track_data)
 
-            # audio_feature_data = fetch_audio_features_from_spotify(
-            #     track_id, access_token)
-            # create_or_update_audio_feature(db, track_id, audio_feature_data)
-
             existing_activity = get_activity_by_ids(
                 db, user_spotify_id, track_id, played_at)
             if existing_activity:
@@ -103,7 +97,6 @@ def fetch_and_store_recent_user_activity(db: Session, user_spotify_id: int, acce
             db.add(new_activity)
             new_activities.append(new_activity)
 
-    # Commit and refresh outside the loop for performance
     if new_activities:
         db.commit()
         for new_activity in new_activities:
@@ -143,22 +136,10 @@ def get_last_week_listening_activities(db: Session, user_spotify_id: str):
         func.string_agg(ArtistAlias.name, ', ').label('artist_names'),
         func.string_agg(ArtistAlias.genres[1], ', ').label('artist_genres'),
         func.string_agg(func.cast(ArtistAlias.popularity, String),
-                        ', ').label('artist_popularity'),
-        AudioFeature.danceability,
-        AudioFeature.energy,
-        AudioFeature.key,
-        AudioFeature.loudness,
-        AudioFeature.mode,
-        AudioFeature.speechiness,
-        AudioFeature.acousticness,
-        AudioFeature.instrumentalness,
-        AudioFeature.liveness,
-        AudioFeature.valence,
-        AudioFeature.tempo
+                        ', ').label('artist_popularity')
     )
         .join(Track, UserListeningActivity.spotify_track_id == Track.id)
         .join(Album, Track.album_spotify_id == Album.id)
-        .join(AudioFeature, Track.id == AudioFeature.id)
         .join(ArtistAlias, ArtistAlias.id == any_(Track.artist_spotify_ids))
         .filter(UserListeningActivity.spotify_user_id == user_spotify_id)
         .filter(and_(
@@ -167,17 +148,17 @@ def get_last_week_listening_activities(db: Session, user_spotify_id: str):
         ))
         .group_by(
         UserListeningActivity.activity_listened_at,
-        Track.name, Track.duration_ms, Track.popularity,
-        Album.name, Album.release_date, Album.total_tracks, Album.genres,
-        AudioFeature.danceability, AudioFeature.energy, AudioFeature.key,
-        AudioFeature.loudness, AudioFeature.mode, AudioFeature.speechiness,
-        AudioFeature.acousticness, AudioFeature.instrumentalness,
-        AudioFeature.liveness, AudioFeature.valence, AudioFeature.tempo
+        Track.name,
+        Track.duration_ms,
+        Track.popularity,
+        Album.name,
+        Album.release_date,
+        Album.total_tracks,
+        Album.genres
     )
         .order_by(UserListeningActivity.activity_listened_at)
         .all())
 
-    # Unpacking query results properly
     data = [{
         "activity_listened_at": activity_listened_at,
         "track_name": track_name,
@@ -189,21 +170,9 @@ def get_last_week_listening_activities(db: Session, user_spotify_id: str):
         "album_genres": album_genres,
         "artist_names": artist_names,
         "artist_genres": artist_genres,
-        "artist_popularity": artist_popularity,
-        "danceability": danceability,
-        "energy": energy,
-        "key": key,
-        "loudness": loudness,
-        "mode": mode,
-        "speechiness": speechiness,
-        "acousticness": acousticness,
-        "instrumentalness": instrumentalness,
-        "liveness": liveness,
-        "valence": valence,
-        "tempo": tempo
+        "artist_popularity": artist_popularity
     } for activity_listened_at, track_name, track_duration, track_popularity, album_name, album_release_date, album_total_tracks, album_genres,
-        artist_names, artist_genres, artist_popularity, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo in activities]
+        artist_names, artist_genres, artist_popularity in activities]
 
-    # Create DataFrame for manipulation
     df = pd.DataFrame(data)
     return df

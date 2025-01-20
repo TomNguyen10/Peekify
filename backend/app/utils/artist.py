@@ -6,7 +6,6 @@ from config import SPOTIFY_API_BASE_URL
 
 
 def get_artist_by_spotify_id(db: Session, spotify_artist_id: str) -> Artist:
-    # Changed to 'id'
     return db.query(Artist).filter(Artist.id == spotify_artist_id).first()
 
 

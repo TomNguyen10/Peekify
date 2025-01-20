@@ -1,3 +1,6 @@
+# Remove since Spotify API stop providing audio features for tracks
+
+
 from sqlalchemy.orm import Session
 from models.audio_features import AudioFeature
 from schemas.audio_features import AudioFeatureCreate

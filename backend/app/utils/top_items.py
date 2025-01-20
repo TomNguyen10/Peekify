@@ -58,13 +58,24 @@ def get_top_5_artists_last_week(db: Session, user_spotify_id: str):
     top_artists_query = get_top_items(
         db, user_spotify_id, last_monday, last_sunday, Track.artist_spotify_ids)
 
-    top_artists = []
+    artist_play_counts = {}
+
     for artist_ids, count in top_artists_query:
         artist_names = get_artist_names(db, artist_ids)
-        top_artists.append({
-            "artist_name": ", ".join(artist_names),
-            "play_count": count
-        })
+        for artist_name in artist_names:
+            if artist_name in artist_play_counts:
+                artist_play_counts[artist_name] += count
+            else:
+                artist_play_counts[artist_name] = count
+
+    sorted_artists = sorted(
+        artist_play_counts.items(), key=lambda x: x[1], reverse=True
+    )
+
+    top_artists = [
+        {"artist_name": name, "play_count": count}
+        for name, count in sorted_artists[:5]
+    ]
 
     return top_artists
 
