@@ -11,7 +11,8 @@ import { LoginPage } from "./pages/LoginPage";
 import { HomePage } from "./pages/HomePage";
 import { Navbar } from "./components/Navbar";
 
-const API_BASE_URL = "http://localhost:8000";
+const LOCAL_BASE_URL = import.meta.env.VITE_LOCAL_BASE_URL;
+const AWS_BASE_URL = import.meta.env.VITE_AWS_BASE_URL;
 
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,17 +28,17 @@ const App: React.FC = () => {
 
           queryParams.delete("code");
           const response = await axios.get(
-            `${API_BASE_URL}/callback?code=${code}`
+            `${AWS_BASE_URL}/callback?code=${code}`
           );
           console.log("User info response:", response.data);
           sessionStorage.setItem("login", "true");
           const jsonString = JSON.stringify(response.data);
           sessionStorage.setItem("userInfo", jsonString);
           window.location.href = "/home";
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error(
             "Failed to login:",
-            error.response ? error.response.data : error.message
+            error instanceof Error ? error.message : String(error)
           );
         }
       }
@@ -47,12 +48,12 @@ const App: React.FC = () => {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = `${API_BASE_URL}/login/spotify`;
+    window.location.href = `${AWS_BASE_URL}/login/spotify`;
   };
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${API_BASE_URL}/logout`);
+      await axios.post(`${AWS_BASE_URL}/logout`);
       sessionStorage.clear();
       window.location.href = "/";
     } catch (error) {

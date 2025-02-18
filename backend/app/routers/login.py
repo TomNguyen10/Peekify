@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, Response, Depends
 from fastapi.responses import JSONResponse, RedirectResponse
-from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI
+from config import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI_LOCAL, SPOTIFY_REDIRECT_URI_DEPLOY
 from sqlalchemy.orm import Session
 from schemas.user import UserCreate
 from schemas.spotify_tokens import SpotifyTokenCreate
@@ -26,7 +26,7 @@ def login_spotify():
         f"https://accounts.spotify.com/authorize"
         f"?response_type=code"
         f"&client_id={SPOTIFY_CLIENT_ID}"
-        f"&redirect_uri={SPOTIFY_REDIRECT_URI}"
+        f"&redirect_uri={SPOTIFY_REDIRECT_URI_DEPLOY}"
         f"&scope={SCOPE}"
     )
     return RedirectResponse(auth_url)
@@ -45,7 +45,7 @@ async def spotify_callback(request: Request, code: str, db: Session = Depends(ge
     payload = {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": SPOTIFY_REDIRECT_URI,
+        "redirect_uri": SPOTIFY_REDIRECT_URI_DEPLOY,
         "client_id": SPOTIFY_CLIENT_ID,
         "client_secret": SPOTIFY_CLIENT_SECRET,
     }
