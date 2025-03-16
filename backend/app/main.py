@@ -35,7 +35,7 @@ def shutdown_event():
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[VERCEL_URL, LOCAL_URL],
+    allow_origins=["https://peekify.vercel.app", VERCEL_URL, LOCAL_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
