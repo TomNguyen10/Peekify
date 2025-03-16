@@ -179,7 +179,7 @@ Peekify
   - Genre detection
   - Trend prediction
 
-- **Claude Sonnet 3.5**
+- **GPT 3.5 turbo 16k**
   - Natural language report generation
   - Personalized recommendations
   - Insight extraction
@@ -339,7 +339,7 @@ graph TD
 API documentation is available at:
 
 - Development: http://localhost:8000/docs
-- Production: https://api.peekify.vercel.app/docs
+- Production: http://3.17.57.20:8000/docs
 
 ## 🧪 Testing
 
