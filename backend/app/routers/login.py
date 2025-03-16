@@ -22,7 +22,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 @router.get("/login/spotify")
 def login_spotify():
-    logging.info(f"SPOTIFY_REDIRECT_URI_DEPLOY: {SPOTIFY_REDIRECT_URI_DEPLOY}")
     auth_url = (
         f"https://accounts.spotify.com/authorize"
         f"?response_type=code"
@@ -30,7 +29,6 @@ def login_spotify():
         f"&redirect_uri={SPOTIFY_REDIRECT_URI_DEPLOY}"
         f"&scope={SCOPE}"
     )
-    logging.info(f"Generated auth URL: {auth_url}")
     return RedirectResponse(auth_url)
 
 
