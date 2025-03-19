@@ -339,7 +339,7 @@ graph TD
 API documentation is available at:
 
 - Development: http://localhost:8000/docs
-- Production: http://3.17.57.20:8000/docs
+- Production: https://3.17.57.20:8000/docs
 
 ## 🧪 Testing
 
