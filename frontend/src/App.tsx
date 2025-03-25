@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; // Import Router and Routes
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TopArtists } from "./pages/TopArtists";
 import { TopSongs } from "./pages/TopSongs";
 import { Dashboard } from "./pages/Dashboard";
@@ -71,17 +71,19 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <Router>
-      {isLoggedIn && <Navbar handleLogout={handleLogout} />}
-      <Routes>
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/top-songs" element={<TopSongs />} />
-        <Route path="/top-artists" element={<TopArtists />} />
-        <Route path="/songs-per-day" element={<SongsPerDay />} />
-        <Route path="/" element={<LoginPage handleLogin={handleLogin} />} />
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <div className="App">
+        {isLoggedIn && <Navbar handleLogout={handleLogout} />}
+        <Routes>
+          <Route path="/" element={<LoginPage handleLogin={handleLogin} />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/top-artists" element={<TopArtists />} />
+          <Route path="/top-songs" element={<TopSongs />} />
+          <Route path="/songs-per-day" element={<SongsPerDay />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 };
 
