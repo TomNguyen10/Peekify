@@ -2,9 +2,77 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/assets/Peekify-logo.png" />
+    <link rel="icon" type="image/png" href="/Peekify-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Peekify</title>
+
+    <!-- Primary Meta Tags -->
+    <title>Peekify - Your Personal Spotify Stats Tracker</title>
+    <meta
+      name="title"
+      content="Peekify - Your Personal Spotify Stats Tracker" />
+    <meta
+      name="description"
+      content="Track your Spotify listening habits, discover your top artists, and analyze your music taste with Peekify." />
+    <meta
+      name="keywords"
+      content="spotify, music stats, spotify stats, music analytics, spotify analytics" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://peekify.com/" />
+    <meta
+      property="og:title"
+      content="Peekify - Your Personal Spotify Stats Tracker" />
+    <meta
+      property="og:description"
+      content="Track your Spotify listening habits, discover your top artists, and analyze your music taste with Peekify." />
+    <meta property="og:image" content="/Peekify-logo.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://peekify.com/" />
+    <meta
+      property="twitter:title"
+      content="Peekify - Your Personal Spotify Stats Tracker" />
+    <meta
+      property="twitter:description"
+      content="Track your Spotify listening habits, discover your top artists, and analyze your music taste with Peekify." />
+    <meta property="twitter:image" content="/Peekify-logo.png" />
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="author" content="Peekify" />
+    <meta name="theme-color" content="#1DB954" />
+    <link rel="canonical" href="https://peekify.com/" />
+
+    <!-- Preconnect to important domains -->
+    <link rel="preconnect" href="https://api.spotify.com" />
+    <link rel="preconnect" href="https://accounts.spotify.com" />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Peekify",
+        "description": "Track your Spotify listening habits, discover your top artists, and analyze your music taste with Peekify.",
+        "url": "https://peekify.com",
+        "applicationCategory": "MusicApplication",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Spotify listening statistics",
+          "Top artists tracking",
+          "Music taste analysis",
+          "Personalized insights"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
