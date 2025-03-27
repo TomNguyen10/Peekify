@@ -17,3 +17,4 @@ pandas==2.2.3
 langchain-cli==0.0.31
 langchain_experimental
 langchain_openai
+pytest==8.0.2
